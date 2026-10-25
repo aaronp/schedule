@@ -12,39 +12,44 @@
 <helmet>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#0e1014}
-a{color:#8fb4ff}a:hover{color:#b9d0ff}
+/* Themes: every UI colour is a token; people/team colours are data and stay as written in the markdown. */
+:root,.sb{color-scheme:dark;--bg:#0e1014;--panel:#12151b;--well:#0b0d11;--raised:#171b22;--raised-hover:#1f2430;--chip:#1a1e26;--chip-hover:#1e232d;--line:#232833;--line-2:#2a303b;--line-hover:#3a4252;--line-strong:#4a5263;--line-pop:#353c4a;--line-soft:#191d25;--grid:#1a1e27;--grid-2:#161a22;--ink:#e7eaf0;--ink-2:#c3c9d4;--muted:#9aa3b2;--faint:#59627a;--accent:#f2b33d;--accent-tint:rgba(242,179,61,.08);--on-color:#0e1014;--link:#8fb4ff;--link-hover:#b9d0ff;--plan:#9db4d6;--bad:#e06c75;--bad-ink:#f6c2c6;--bad-soft:#e88a92;--bad-bg:#2a1a1d;--good:#3fb68b;--good-ink:#bfe9d6;--good-bg:#16251f;--select:#1d2330;--drop:#1a1d24;--card:rgba(18,21,27,.94)}
+.sb[data-theme="paper"]{color-scheme:light;--bg:#f6f4ef;--panel:#fbfaf7;--well:#ffffff;--raised:#ffffff;--raised-hover:#f0ede6;--chip:#ffffff;--chip-hover:#f4f1ea;--line:#e3ded3;--line-2:#d6d0c3;--line-hover:#bfb8a9;--line-strong:#a9a294;--line-pop:#d6d0c3;--line-soft:#ece8df;--grid:#ece8df;--grid-2:#ebe7dd;--ink:#1d1b17;--ink-2:#3d3a33;--muted:#6b6458;--faint:#a39c8f;--accent:#a86a00;--accent-tint:rgba(168,106,0,.1);--on-color:#0e1014;--link:#1f6fb8;--link-hover:#174f85;--plan:#7d93b5;--bad:#c2404d;--bad-ink:#8a1f2b;--bad-soft:#e88a92;--bad-bg:#fbe9eb;--good:#2e9c74;--good-ink:#1d5c45;--good-bg:#e6f5ee;--select:#efe9dc;--drop:#f5efe2;--card:rgba(255,255,255,.95)}
+.sb[data-theme="blueprint"]{color-scheme:dark;--bg:#0d2440;--panel:#10294a;--well:#0a1d35;--raised:#143159;--raised-hover:#1a3a68;--chip:#143159;--chip-hover:#1a3a68;--line:#24466f;--line-2:#2c5280;--line-hover:#3a659a;--line-strong:#4a77ad;--line-pop:#3a659a;--line-soft:#173560;--grid:#173560;--grid-2:#163256;--ink:#e8f1ff;--ink-2:#c4d6f0;--muted:#8fa9cc;--faint:#5f7ea8;--accent:#ffd166;--accent-tint:rgba(255,209,102,.1);--on-color:#0e1014;--link:#9cc7ff;--link-hover:#c6defd;--plan:#b8d4ff;--bad:#e06c75;--bad-ink:#f6c2c6;--bad-soft:#e88a92;--bad-bg:#3a1a28;--good:#3fb68b;--good-ink:#bfe9d6;--good-bg:#12333a;--select:#1d3e6c;--drop:#183a63;--card:rgba(16,41,74,.94)}
+.sb[data-theme="warm"]{color-scheme:light;--bg:#f4ecdc;--panel:#faf4e8;--well:#fffaf0;--raised:#fffaf0;--raised-hover:#f1e6d0;--chip:#fffaf0;--chip-hover:#f5ead6;--line:#e2d4b8;--line-2:#d5c4a3;--line-hover:#bfa97f;--line-strong:#a88f62;--line-pop:#d5c4a3;--line-soft:#ebdfc8;--grid:#ebdfc8;--grid-2:#e9dcc2;--ink:#2b2118;--ink-2:#4a3b2c;--muted:#7a6650;--faint:#ad9a80;--accent:#b85c1e;--accent-tint:rgba(184,92,30,.1);--on-color:#1d1712;--link:#9a4a12;--link-hover:#6e3409;--plan:#8f7a5a;--bad:#b33a3a;--bad-ink:#7e1f1f;--bad-soft:#e39a8f;--bad-bg:#f8e3dc;--good:#3c8a5a;--good-ink:#1f5234;--good-bg:#e3f0e3;--select:#f1e4c8;--drop:#f3e6cc;--card:rgba(255,250,240,.95)}
+body{margin:0;background:var(--bg)}
+a{color:var(--link)}a:hover{color:var(--link-hover)}
 .sb *{box-sizing:border-box}
 .sb button,.sb input,.sb select,.sb textarea{font:inherit;color:inherit}
-.sb :focus-visible{outline:2px solid #f2b33d;outline-offset:2px}
-.sb-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 12px;border-radius:8px;border:1px solid #2a303b;background:#171b22;color:#e7eaf0;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap}
-.sb-btn:hover{background:#1f2430;border-color:#3a4252}
-.sb-btn[aria-pressed="true"]{background:#e7eaf0;color:#0e1014;border-color:#e7eaf0}
+.sb :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sb-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 12px;border-radius:8px;border:1px solid var(--line-2);background:var(--raised);color:var(--ink);cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap}
+.sb-btn:hover{background:var(--raised-hover);border-color:var(--line-hover)}
+.sb-btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .sb-btn:disabled{opacity:.4;cursor:default}
 .sb-icon{width:40px;padding:0}
-.sb-chip{display:flex;align-items:center;gap:10px;padding:4px 10px;background:#1a1e26;border:1px solid #2a303b;border-radius:9px;color:#e7eaf0;text-align:left;cursor:grab}
-.sb-chip:hover{border-color:#4a5263;background:#1e232d}
+.sb-chip{display:flex;align-items:center;gap:10px;padding:4px 10px;background:var(--chip);border:1px solid var(--line-2);border-radius:9px;color:var(--ink);text-align:left;cursor:grab}
+.sb-chip:hover{border-color:var(--line-strong);background:var(--chip-hover)}
 .sb-x{opacity:0}
 .sb-bar:hover .sb-x,.sb-x:focus-visible{opacity:1}
 .sb-handle{position:absolute;top:0;bottom:0;width:9px;cursor:ew-resize;touch-action:none}
-.sb-range{accent-color:#f2b33d}
+.sb-range{accent-color:var(--accent)}
 .sb-hatch{background:repeating-linear-gradient(135deg,rgba(232,138,146,.22) 0 5px,transparent 5px 11px)}
 .sb-field{display:flex;flex-direction:column;gap:6px}
-.sb-field label,.sb-lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9aa3b2;font-weight:600}
-.sb-input{height:40px;padding:0 10px;border-radius:8px;border:1px solid #2a303b;background:#0b0d11;color:#e7eaf0;font-size:13px;min-width:0}
-.sb-input:focus{border-color:#4a5263}
-.sb-sel{height:36px;padding:0 6px;border-radius:7px;border:1px solid #2a303b;background:#0b0d11;color:#e7eaf0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace}
+.sb-field label,.sb-lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.sb-input{height:40px;padding:0 10px;border-radius:8px;border:1px solid var(--line-2);background:var(--well);color:var(--ink);font-size:13px;min-width:0}
+.sb-input:focus{border-color:var(--line-strong)}
+.sb-sel{height:36px;padding:0 6px;border-radius:7px;border:1px solid var(--line-2);background:var(--well);color:var(--ink);font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace}
 @media (prefers-reduced-motion: reduce){.sb-anim{transition:none !important}}
 </style>
 </helmet>
-<div class="sb" style="height: 100vh; display: flex; flex-direction: column; background: #0e1014; color: #e7eaf0; font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; overflow: hidden">
+<div class="sb" data-theme="{{theme}}" style="height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; overflow: hidden">
 
-<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 10px 16px; border-bottom: 1px solid #232833; background: #12151b">
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel)">
   <div style="display: flex; align-items: center; gap: 10px; min-width: 0">
-    <svg aria-hidden="true" width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#f2b33d" stroke-width="2" stroke-linecap="round"><path d="M3 7h12"></path><path d="M9 13h14"></path><path d="M5 19h9"></path></svg>
+    <svg aria-hidden="true" width="26" height="26" viewBox="0 0 26 26" fill="none" stroke-width="2" stroke-linecap="round" style="stroke: var(--accent)"><path d="M3 7h12"></path><path d="M9 13h14"></path><path d="M5 19h9"></path></svg>
     <div style="display: flex; flex-direction: column; min-width: 0">
       <span style="font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{title}}</span>
-      <span style="font-size: 12px; color: #9aa3b2">{{dateLong}}</span>
+      <span style="font-size: 12px; color: var(--muted)">{{dateLong}}</span>
     </div>
   </div>
 
@@ -62,21 +67,21 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8.5" height="8.5" rx="1.5"></rect><path d="M10.5 3.5V3A1.5 1.5 0 0 0 9 1.5H3A1.5 1.5 0 0 0 1.5 3v6A1.5 1.5 0 0 0 3 10.5h.5"></path></svg>
       </button>
       <sc-if value="{{copyOpen}}" hint-placeholder-val="{{ false }}">
-        <div role="dialog" aria-label="Copy shifts from another day" style="position: absolute; top: 46px; left: 0; z-index: 50; width: 300px; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: #171b22; border: 1px solid #353c4a; border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,.55)">
+        <div role="dialog" aria-label="Copy shifts from another day" style="position: absolute; top: 46px; left: 0; z-index: 50; width: 300px; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: var(--raised); border: 1px solid var(--line-pop); border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,.55)">
           <div style="display: flex; align-items: center; gap: 8px">
             <span style="font-size: 13px; font-weight: 600; flex: 1">Copy shifts into {{dateShort}}</span>
             <button class="sb-btn sb-icon" aria-label="Close" onClick="{{toggleCopy}}" style="height: 32px; width: 32px; border-color: transparent; background: transparent"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
           </div>
-          <div role="group" aria-label="Copy mode" style="display: flex; gap: 4px; padding: 3px; border: 1px solid #2a303b; border-radius: 9px; background: #0e1014">
+          <div role="group" aria-label="Copy mode" style="display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--bg)">
             <button class="sb-btn" aria-pressed="{{copyReplacePressed}}" onClick="{{copyModeReplace}}" style="flex: 1; height: 32px; border-color: transparent">Replace day</button>
             <button class="sb-btn" aria-pressed="{{copyMergePressed}}" onClick="{{copyModeMerge}}" style="flex: 1; height: 32px; border-color: transparent">Add to day</button>
           </div>
-          <p style="margin: 0; font-size: 11.5px; line-height: 1.45; color: #9aa3b2">{{copyHelp}}</p>
+          <p style="margin: 0; font-size: 11.5px; line-height: 1.45; color: var(--muted)">{{copyHelp}}</p>
           <div style="display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow: auto">
             <sc-for list="{{copySources}}" as="cs" hint-placeholder-count="2">
               <button class="sb-btn" disabled="{{cs.empty}}" onClick="{{cs.pick}}" style="justify-content: space-between; width: 100%">
                 <span>{{cs.label}}</span>
-                <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2">{{cs.count}}</span>
+                <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted)">{{cs.count}}</span>
               </button>
             </sc-for>
           </div>
@@ -85,7 +90,7 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
     </div>
   </div>
 
-  <div role="group" aria-label="View" style="display: flex; gap: 4px; padding: 3px; border: 1px solid #2a303b; border-radius: 10px; background: #0e1014">
+  <div role="group" aria-label="View" style="display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--bg)">
     <button class="sb-btn" aria-pressed="{{swimPressed}}" onClick="{{viewSwim}}" style="height: 34px; border-color: transparent"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h7M5 8h9M3 12h6"></path></svg>Swimlanes</button>
     <button class="sb-btn" aria-pressed="{{layoutPressed}}" onClick="{{viewLayout}}" style="height: 34px; border-color: transparent"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5z"></path><path d="M5.5 2v10.5M10.5 3.5V14"></path></svg>Layout</button>
   </div>
@@ -98,16 +103,16 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
     <div style="position: relative; flex: 1; height: 40px; display: flex; align-items: flex-end">
       <div style="position: absolute; left: 8px; right: 8px; top: 2px; height: 12px">
         <sc-for list="{{marks}}" as="mk" hint-placeholder-count="6">
-          <button aria-label="{{mk.label}}" onClick="{{mk.jump}}" style="position: absolute; left: {{mk.left}}%; top: 0; width: 10px; height: 12px; margin-left: -5px; padding: 0; border: 0; background: transparent; cursor: pointer; display: flex; justify-content: center"><span style="display: block; width: 2px; height: 9px; background: #59627a; border-radius: 1px"></span></button>
+          <button aria-label="{{mk.label}}" onClick="{{mk.jump}}" style="position: absolute; left: {{mk.left}}%; top: 0; width: 10px; height: 12px; margin-left: -5px; padding: 0; border: 0; background: transparent; cursor: pointer; display: flex; justify-content: center"><span style="display: block; width: 2px; height: 9px; background: var(--faint); border-radius: 1px"></span></button>
         </sc-for>
       </div>
       <input class="sb-range" type="range" aria-label="Time of day" min="{{hStart}}" max="{{hEnd}}" step="15" value="{{t}}" onChange="{{onTime}}" style="width: 100%; margin: 0 0 6px">
     </div>
-    <output style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 20px; font-weight: 600; color: #f2b33d; min-width: 64px">{{timeLabel}}</output>
+    <output style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 20px; font-weight: 600; color: var(--accent); min-width: 64px">{{timeLabel}}</output>
   </div>
 
   <div role="search" style="position: relative; display: flex; align-items: center; flex: 0 1 260px; min-width: 180px">
-    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#9aa3b2" stroke-width="1.7" stroke-linecap="round" style="position: absolute; left: 11px; pointer-events: none"><circle cx="6" cy="6" r="4.2"></circle><path d="m9.2 9.2 3.3 3.3"></path></svg>
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke-width="1.7" stroke-linecap="round" style="stroke: var(--muted); position: absolute; left: 11px; pointer-events: none"><circle cx="6" cy="6" r="4.2"></circle><path d="m9.2 9.2 3.3 3.3"></path></svg>
     <input class="sb-input" type="search" aria-label="Filter people by name, id, role or team" placeholder="Filter people…" value="{{query}}" onChange="{{onQuery}}" style="width: 100%; padding-left: 32px; padding-right: 74px; border-color: {{queryBorder}}">
     <sc-if value="{{hasQuery}}" hint-placeholder-val="{{ false }}">
       <span style="position: absolute; right: 40px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: {{matchColor}}; pointer-events: none">{{matchCount}}</span>
@@ -115,16 +120,20 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
     </sc-if>
   </div>
 
+  <button class="sb-btn" onClick="{{showOpen}}" title="Open a schedule from a file or URL"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 4.5v8a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H8L6.5 3h-4a1 1 0 0 0-1 1.5z"></path></svg>Open</button>
+  <select class="sb-sel" aria-label="Theme" value="{{theme}}" onChange="{{onTheme}}" style="height: 40px; padding: 0 8px; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 13px">
+    <sc-for list="{{themes}}" as="th" hint-placeholder-count="4"><option value="{{th.value}}">{{th.label}}</option></sc-for>
+  </select>
   <button class="sb-btn" aria-pressed="{{mdPressed}}" onClick="{{toggleMd}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="3" width="13" height="10" rx="1.5"></rect><path d="M4 10.5v-5l2 2.5 2-2.5v5M11.5 5.5v5M10 9l1.5 1.5L13 9"></path></svg>Markdown</button>
 </header>
 
 <div style="flex: 1; min-height: 0; display: flex; flex-wrap: wrap; overflow: auto">
 
   <sc-if value="{{showDrawer}}" hint-placeholder-val="{{ true }}">
-  <aside aria-label="Roster" style="flex: 1 1 264px; min-width: 0; max-height: 100%; display: flex; flex-direction: column; background: #12151b; border-right: 1px solid #232833; overflow: hidden">
+  <aside aria-label="Roster" style="flex: 1 1 264px; min-width: 0; max-height: 100%; display: flex; flex-direction: column; background: var(--panel); border-right: 1px solid var(--line); overflow: hidden">
     <div style="padding: 16px 16px 10px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
-      <h2 style="margin: 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #9aa3b2; font-weight: 600">Roster</h2>
-      <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2">{{peopleCount}} people</span>
+      <h2 style="margin: 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600">Roster</h2>
+      <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted)">{{peopleCount}} people</span>
     </div>
     <div style="flex: 1; min-height: 0; overflow: auto; padding: 0 12px 12px; display: flex; flex-direction: column; gap: 6px">
       <span class="sb-lbl" style="padding: 4px 2px">Not scheduled · {{dateShort}}</span>
@@ -135,10 +144,10 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
             <span style="font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
             <span style="font-size: 11px; color: {{p.subColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.sub}}</span>
           </span>
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; flex: none">{{p.slug}}</span>
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted); flex: none">{{p.slug}}</span>
         </button>
       </sc-for>
-      <sc-if value="{{noUnscheduled}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; padding: 6px 4px; font-size: 12px; color: #9aa3b2">Everyone has a shift on this day.</p></sc-if>
+      <sc-if value="{{noUnscheduled}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; padding: 6px 4px; font-size: 12px; color: var(--muted)">Everyone has a shift on this day.</p></sc-if>
       <span class="sb-lbl" style="padding: 12px 2px 4px">On the schedule</span>
       <sc-for list="{{scheduled}}" as="p" hint-placeholder-count="6">
         <button class="sb-chip" draggable="true" onDragStart="{{p.dragStart}}" onClick="{{p.select}}" aria-label="{{p.aria}}" style="width: 100%; min-height: 48px; border-color: {{p.border}}; opacity: {{p.fade}}; transition: opacity 200ms">
@@ -147,11 +156,11 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
             <span style="font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
             <span style="font-size: 11px; color: {{p.subColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.sub}}</span>
           </span>
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; flex: none">{{p.slug}}</span>
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted); flex: none">{{p.slug}}</span>
         </button>
       </sc-for>
     </div>
-    <div style="border-top: 1px solid #232833; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+    <div style="border-top: 1px solid var(--line); padding: 12px; display: flex; flex-direction: column; gap: 10px">
       <div class="sb-field">
         <label for="sb-new-person">Add person</label>
         <div style="display: flex; gap: 6px">
@@ -172,36 +181,36 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
 
   <sc-if value="{{showNoDate}}" hint-placeholder-val="{{ false }}">
   <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 48px 16px">
-    <p style="margin: 0; font-size: 15px; color: #c3c9d4">No days in this schedule yet.</p>
+    <p style="margin: 0; font-size: 15px; color: var(--ink-2)">No days in this schedule yet.</p>
     <button class="sb-btn" onClick="{{addDay}}">Add a day</button>
   </main>
   </sc-if>
 
   <sc-if value="{{showSwim}}" hint-placeholder-val="{{ true }}">
-  <main aria-label="Swimlanes" style="flex: 999 1 560px; min-width: 0; max-height: 100%; overflow: auto; position: relative; background: #0e1014">
+  <main aria-label="Swimlanes" style="flex: 999 1 560px; min-width: 0; max-height: 100%; overflow: auto; position: relative; background: var(--bg)">
     <div style="position: relative; width: {{swimW}}px; min-height: 100%">
-      <div style="position: sticky; top: 0; z-index: 6; display: flex; height: 40px; background: #0e1014; border-bottom: 1px solid #232833">
-        <div style="position: sticky; left: 0; z-index: 7; width: 232px; flex: none; display: flex; align-items: center; padding: 0 16px; background: #0e1014; border-right: 1px solid #232833; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #9aa3b2; font-weight: 600">Teams · {{dateShort}}</div>
+      <div style="position: sticky; top: 0; z-index: 6; display: flex; height: 40px; background: var(--bg); border-bottom: 1px solid var(--line)">
+        <div style="position: sticky; left: 0; z-index: 7; width: 232px; flex: none; display: flex; align-items: center; padding: 0 16px; background: var(--bg); border-right: 1px solid var(--line); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600">Teams · {{dateShort}}</div>
         <div onClick="{{onAxisClick}}" title="Click to move the time cursor" style="position: relative; width: {{laneW}}px; flex: none; cursor: pointer">
           <sc-for list="{{ticks}}" as="tk" hint-placeholder-count="16">
-            <div style="position: absolute; left: {{tk.left}}px; top: 0; bottom: 0; border-left: 1px solid #232833; padding: 13px 0 0 6px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; pointer-events: none">{{tk.label}}</div>
+            <div style="position: absolute; left: {{tk.left}}px; top: 0; bottom: 0; border-left: 1px solid var(--line); padding: 13px 0 0 6px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted); pointer-events: none">{{tk.label}}</div>
           </sc-for>
-          <div style="position: absolute; left: {{cursorX}}px; top: 8px; transform: translateX(-50%); padding: 3px 7px; border-radius: 6px; background: #f2b33d; color: #0e1014; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; pointer-events: none">{{timeLabel}}</div>
+          <div style="position: absolute; left: {{cursorX}}px; top: 8px; transform: translateX(-50%); padding: 3px 7px; border-radius: 6px; background: var(--accent); color: var(--on-color); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; pointer-events: none">{{timeLabel}}</div>
         </div>
       </div>
 
       <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
-        <section onDragOver="{{g.dragOver}}" onDragLeave="{{g.dragLeave}}" onDrop="{{g.drop}}" style="border-bottom: 1px solid #232833; background: {{g.dropBg}}">
+        <section onDragOver="{{g.dragOver}}" onDragLeave="{{g.dragLeave}}" onDrop="{{g.drop}}" style="border-bottom: 1px solid var(--line); background: {{g.dropBg}}">
           <div style="display: flex; height: 44px">
-            <div style="position: sticky; left: 0; z-index: 3; width: 232px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 4px; background: #12151b; border-right: 1px solid #232833">
+            <div style="position: sticky; left: 0; z-index: 3; width: 232px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 4px; background: var(--panel); border-right: 1px solid var(--line)">
               <button class="sb-btn sb-icon" aria-expanded="{{g.expandedStr}}" aria-label="{{g.toggleLabel}}" onClick="{{g.toggle}}" style="height: 36px; width: 36px; border-color: transparent; background: transparent">
                 <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 200ms; transform: rotate({{g.chevron}}deg)"><path d="m3 5 4 4 4-4"></path></svg>
               </button>
               <span style="width: 12px; height: 12px; border-radius: 3px; flex: none; background: {{g.color}}"></span>
               <span style="font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{g.name}}</span>
-              <span style="margin-left: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; white-space: nowrap">{{g.stat}}</span>
+              <span style="margin-left: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted); white-space: nowrap">{{g.stat}}</span>
             </div>
-            <div style="position: relative; width: {{laneW}}px; flex: none; background: #12151b">
+            <div style="position: relative; width: {{laneW}}px; flex: none; background: var(--panel)">
               <sc-if value="{{g.collapsed}}" hint-placeholder-val="{{ false }}">
                 <sc-for list="{{g.mini}}" as="mb" hint-placeholder-count="3">
                   <div style="position: absolute; left: {{mb.left}}px; width: {{mb.width}}px; top: {{mb.top}}px; height: 6px; border-radius: 3px; background: {{mb.bg}}; opacity: {{mb.fade}}"></div>
@@ -211,26 +220,26 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
           </div>
           <sc-if value="{{g.expanded}}" hint-placeholder-val="{{ true }}">
             <sc-for list="{{g.rows}}" as="r" hint-placeholder-count="3">
-              <div style="display: flex; height: 44px; border-top: 1px solid #191d25; opacity: {{r.fade}}; transition: opacity 200ms">
-                <div style="position: sticky; left: 0; z-index: 3; width: 232px; flex: none; display: flex; align-items: center; padding: 0 8px 0 18px; background: {{r.labelBg}}; border-right: 1px solid #232833; box-shadow: {{r.matchRing}}">
+              <div style="display: flex; height: 44px; border-top: 1px solid var(--line-soft); opacity: {{r.fade}}; transition: opacity 200ms">
+                <div style="position: sticky; left: 0; z-index: 3; width: 232px; flex: none; display: flex; align-items: center; padding: 0 8px 0 18px; background: {{r.labelBg}}; border-right: 1px solid var(--line); box-shadow: {{r.matchRing}}">
                   <button onClick="{{r.select}}" style="display: flex; align-items: center; gap: 10px; width: 100%; height: 40px; padding: 0 8px; border: 0; border-radius: 7px; background: transparent; text-align: left; cursor: pointer; min-width: 0">
                     <span style="width: 9px; height: 9px; border-radius: 50%; flex: none; background: {{r.dot}}"></span>
                     <span style="display: flex; flex-direction: column; min-width: 0">
                       <span style="font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</span>
-                      <span style="font-size: 11px; color: #9aa3b2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.role}}</span>
+                      <span style="font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.role}}</span>
                     </span>
                   </button>
                 </div>
-                <div style="position: relative; width: {{laneW}}px; flex: none; background-image: linear-gradient(90deg, #1a1e27 1px, transparent 1px); background-size: {{hourPx}}px 100%; background-position: {{gridOffset}}px 0">
+                <div style="position: relative; width: {{laneW}}px; flex: none; background-image: linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: {{hourPx}}px 100%; background-position: {{gridOffset}}px 0">
                   <sc-for list="{{r.blocks}}" as="bk" hint-placeholder-count="1">
                     <div class="sb-hatch" title="Unavailable" style="position: absolute; top: 0; bottom: 0; left: {{bk.left}}px; width: {{bk.width}}px"></div>
                   </sc-for>
                   <sc-for list="{{r.bars}}" as="b" hint-placeholder-count="1">
-                    <div class="sb-bar" title="{{b.title}}" onPointerDown="{{b.downMove}}" onPointerMove="{{onBarMove}}" onPointerUp="{{onBarUp}}" onPointerCancel="{{onBarCancel}}" style="position: absolute; top: 6px; height: 32px; left: {{b.left}}px; width: {{b.width}}px; background: {{b.bg}}; border-radius: 7px; color: #0e1014; display: flex; align-items: center; gap: 6px; padding: 0 4px 0 11px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; cursor: grab; touch-action: none; user-select: none; box-shadow: {{b.ring}}; z-index: {{b.z}}">
+                    <div class="sb-bar" title="{{b.title}}" onPointerDown="{{b.downMove}}" onPointerMove="{{onBarMove}}" onPointerUp="{{onBarUp}}" onPointerCancel="{{onBarCancel}}" style="position: absolute; top: 6px; height: 32px; left: {{b.left}}px; width: {{b.width}}px; background: {{b.bg}}; border-radius: 7px; color: var(--on-color); display: flex; align-items: center; gap: 6px; padding: 0 4px 0 11px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; cursor: grab; touch-action: none; user-select: none; box-shadow: {{b.ring}}; z-index: {{b.z}}">
                       <span class="sb-handle" aria-hidden="true" onPointerDown="{{b.downStart}}" style="left: 0"></span>
-                      <sc-if value="{{b.warn}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Overlaps unavailable time" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="#0e1014" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: none"><path d="M7 1.5 13 12.5H1z"></path><path d="M7 5.5v3M7 10.5v.01"></path></svg></sc-if>
+                      <sc-if value="{{b.warn}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Overlaps unavailable time" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: none"><path d="M7 1.5 13 12.5H1z"></path><path d="M7 5.5v3M7 10.5v.01"></path></svg></sc-if>
                       <span style="flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{b.label}}</span>
-                      <button class="sb-x" aria-label="{{b.removeLabel}}" onPointerDown="{{stop}}" onClick="{{b.remove}}" style="flex: none; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 5px; background: rgba(14,16,20,.18); color: #0e1014; cursor: pointer; padding: 0"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
+                      <button class="sb-x" aria-label="{{b.removeLabel}}" onPointerDown="{{stop}}" onClick="{{b.remove}}" style="flex: none; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 5px; background: rgba(14,16,20,.18); color: var(--on-color); cursor: pointer; padding: 0"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
                       <span class="sb-handle" aria-hidden="true" onPointerDown="{{b.downEnd}}" style="right: 0"></span>
                     </div>
                   </sc-for>
@@ -238,23 +247,23 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
               </div>
             </sc-for>
             <sc-if value="{{g.empty}}" hint-placeholder-val="{{ false }}">
-              <div style="display: flex; height: 44px; border-top: 1px solid #191d25">
-                <div style="position: sticky; left: 0; width: 232px; flex: none; background: #12151b; border-right: 1px solid #232833"></div>
-                <div style="display: flex; align-items: center; padding: 0 16px; font-size: 12px; color: #9aa3b2">Drag people here from the roster</div>
+              <div style="display: flex; height: 44px; border-top: 1px solid var(--line-soft)">
+                <div style="position: sticky; left: 0; width: 232px; flex: none; background: var(--panel); border-right: 1px solid var(--line)"></div>
+                <div style="display: flex; align-items: center; padding: 0 16px; font-size: 12px; color: var(--muted)">Drag people here from the roster</div>
               </div>
             </sc-if>
           </sc-if>
         </section>
       </sc-for>
 
-      <div aria-hidden="true" style="position: absolute; top: 40px; bottom: 0; left: {{cursorLeft}}px; width: 2px; margin-left: -1px; background: #f2b33d; opacity: .85; z-index: 2; pointer-events: none"></div>
+      <div aria-hidden="true" style="position: absolute; top: 40px; bottom: 0; left: {{cursorLeft}}px; width: 2px; margin-left: -1px; background: var(--accent); opacity: .85; z-index: 2; pointer-events: none"></div>
     </div>
   </main>
   </sc-if>
 
   <sc-if value="{{showLayout}}" hint-placeholder-val="{{ false }}">
-  <main aria-label="Layout" style="flex: 999 1 560px; min-width: 0; max-height: 100%; display: flex; flex-direction: column; background: #0b0d11">
-    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 8px 12px; border-bottom: 1px solid #232833; background: #12151b">
+  <main aria-label="Layout" style="flex: 999 1 560px; min-width: 0; max-height: 100%; display: flex; flex-direction: column; background: var(--well)">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--panel)">
       <span class="sb-lbl">Background</span>
       <button class="sb-btn" aria-pressed="{{bgSamplePressed}}" onClick="{{setBgSample}}" style="height: 36px">Sample floor plan</button>
       <label class="sb-btn" style="height: 36px">
@@ -266,26 +275,26 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
       <sc-if value="{{hasBg}}" hint-placeholder-val="{{ true }}">
         <label for="sb-bg-op" class="sb-lbl" style="margin-left: 6px">Opacity</label>
         <input id="sb-bg-op" class="sb-range" type="range" min="0.05" max="1" step="0.05" value="{{bgOpacity}}" onChange="{{onBgOpacity}}" style="width: 120px">
-        <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; min-width: 34px">{{bgOpacityLabel}}</span>
+        <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted); min-width: 34px">{{bgOpacityLabel}}</span>
         <label for="sb-bg-sc" class="sb-lbl" style="margin-left: 6px">Scale</label>
         <input id="sb-bg-sc" class="sb-range" type="range" min="0.25" max="3" step="0.05" value="{{bgScale}}" onChange="{{onBgScale}}" style="width: 120px">
-        <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; min-width: 40px">{{bgScaleLabel}}</span>
+        <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted); min-width: 40px">{{bgScaleLabel}}</span>
         <sc-if value="{{bgScaled}}" hint-placeholder-val="{{ false }}">
           <button class="sb-btn" onClick="{{resetBgScale}}" style="height: 32px; padding: 0 10px; font-size: 12px">Reset</button>
         </sc-if>
       </sc-if>
       <sc-if value="{{bgLocalMissing}}" hint-placeholder-val="{{ false }}">
-        <span style="font-size: 12px; color: #f2b33d">Local image isn't stored in the markdown. Upload it again to see it.</span>
+        <span style="font-size: 12px; color: var(--accent)">Local image isn't stored in the markdown. Upload it again to see it.</span>
       </sc-if>
-      <span style="margin-left: auto; font-size: 12px; color: #9aa3b2">Drag team headers to place them. Drag people between teams to reassign at {{timeLabel}}.</span>
+      <span style="margin-left: auto; font-size: 12px; color: var(--muted)">Drag team headers to place them. Drag people between teams to reassign at {{timeLabel}}.</span>
     </div>
     <div style="flex: 1; min-height: 0; overflow: auto">
       <div style="position: relative; width: {{stageW}}px; height: {{stageH}}px">
-        <div aria-hidden="true" style="position: absolute; left: 256px; top: 0; width: {{mapW}}px; height: {{stageH}}px; background-color: #0b0d11; background-image: linear-gradient(#161a22 1px, transparent 1px), linear-gradient(90deg, #161a22 1px, transparent 1px); background-size: 40px 40px; overflow: hidden">
+        <div aria-hidden="true" style="position: absolute; left: 256px; top: 0; width: {{mapW}}px; height: {{stageH}}px; background-color: var(--well); background-image: linear-gradient(var(--grid-2) 1px, transparent 1px), linear-gradient(90deg, var(--grid-2) 1px, transparent 1px); background-size: 40px 40px; overflow: hidden">
           <div style="position: absolute; left: 0; top: 0; width: 1000px; height: 720px; transform: scale({{bgScale}}); transform-origin: 0 0; transition: transform 200ms ease">
           <sc-if value="{{bgSample}}" hint-placeholder-val="{{ true }}">
             <svg width="1000" height="720" viewBox="0 0 1000 720" fill="none" style="position: absolute; left: 0; top: 0; opacity: {{bgOpacity}}">
-              <g stroke="#9db4d6" stroke-width="3">
+              <g stroke-width="3" style="stroke: var(--plan)">
                 <rect x="16" y="16" width="968" height="688" rx="4"></rect>
                 <path d="M320 16v270M320 340v364"></path>
                 <path d="M16 440h120M190 440h130"></path>
@@ -293,12 +302,12 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
                 <path d="M720 16v330M720 400v304"></path>
                 <path d="M720 400h264M720 560h264"></path>
               </g>
-              <g stroke="#9db4d6" stroke-width="1.5" opacity=".7">
+              <g stroke-width="1.5" opacity=".7" style="stroke: var(--plan)">
                 <rect x="352" y="40" width="336" height="200" rx="3" stroke-dasharray="6 6"></rect>
                 <path d="M736 360h232" stroke-dasharray="4 6"></path>
                 <path d="M60 690v-40M100 690v-40M140 690v-40"></path>
               </g>
-              <g fill="#9db4d6" font-family="JetBrains Mono, monospace" font-size="13" letter-spacing="2">
+              <g font-family="JetBrains Mono, monospace" font-size="13" letter-spacing="2" style="fill: var(--plan)">
                 <text x="32" y="428">FOYER</text>
                 <text x="32" y="636">ENTRANCE</text>
                 <text x="336" y="304">STAGE</text>
@@ -315,26 +324,26 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
           </div>
         </div>
 
-        <div onDragOver="{{dockDragOver}}" onDragLeave="{{dockDragLeave}}" onDrop="{{dockDrop}}" style="position: absolute; left: 0; top: 0; width: 256px; height: {{stageH}}px; background: {{dockBg}}; border-right: 1px solid #232833">
+        <div onDragOver="{{dockDragOver}}" onDragLeave="{{dockDragLeave}}" onDrop="{{dockDrop}}" style="position: absolute; left: 0; top: 0; width: 256px; height: {{stageH}}px; background: {{dockBg}}; border-right: 1px solid var(--line)">
           <div style="height: 64px; padding: 14px 14px 0; display: flex; flex-direction: column; gap: 2px">
-            <h2 style="margin: 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #9aa3b2; font-weight: 600">Roster · off shift</h2>
-            <span style="font-size: 12px; color: #c3c9d4">{{dockCount}} at {{timeLabel}}</span>
+            <h2 style="margin: 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600">Roster · off shift</h2>
+            <span style="font-size: 12px; color: var(--ink-2)">{{dockCount}} at {{timeLabel}}</span>
           </div>
         </div>
 
         <sc-for list="{{cards}}" as="k" hint-placeholder-count="5">
-          <div class="sb-anim" onDragOver="{{k.dragOver}}" onDragLeave="{{k.dragLeave}}" onDrop="{{k.drop}}" style="position: absolute; left: {{k.left}}px; top: {{k.top}}px; width: 240px; height: {{k.height}}px; transition: {{k.transition}}; background: rgba(18,21,27,.94); border: 1px solid {{k.border}}; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.45); overflow: hidden; z-index: {{k.z}}">
+          <div class="sb-anim" onDragOver="{{k.dragOver}}" onDragLeave="{{k.dragLeave}}" onDrop="{{k.drop}}" style="position: absolute; left: {{k.left}}px; top: {{k.top}}px; width: 240px; height: {{k.height}}px; transition: {{k.transition}}; background: var(--card); border: 1px solid {{k.border}}; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.45); overflow: hidden; z-index: {{k.z}}">
             <div onPointerDown="{{k.down}}" onPointerMove="{{onTeamMove}}" onPointerUp="{{onTeamUp}}" onPointerCancel="{{onTeamUp}}" style="height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 4px 0 8px; background: {{k.tint}}; cursor: {{k.cursor}}; touch-action: none; user-select: none">
-              <svg aria-hidden="true" width="10" height="16" viewBox="0 0 10 16" fill="#9aa3b2"><circle cx="3" cy="3" r="1.3"></circle><circle cx="7" cy="3" r="1.3"></circle><circle cx="3" cy="8" r="1.3"></circle><circle cx="7" cy="8" r="1.3"></circle><circle cx="3" cy="13" r="1.3"></circle><circle cx="7" cy="13" r="1.3"></circle></svg>
+              <svg aria-hidden="true" width="10" height="16" viewBox="0 0 10 16" style="fill: var(--muted)"><circle cx="3" cy="3" r="1.3"></circle><circle cx="7" cy="3" r="1.3"></circle><circle cx="3" cy="8" r="1.3"></circle><circle cx="7" cy="8" r="1.3"></circle><circle cx="3" cy="13" r="1.3"></circle><circle cx="7" cy="13" r="1.3"></circle></svg>
               <span style="width: 12px; height: 12px; border-radius: 3px; flex: none; background: {{k.color}}"></span>
               <span style="font-size: 14px; font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{k.name}}</span>
-              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600; padding: 2px 7px; border-radius: 10px; background: #0e1014; color: #e7eaf0">{{k.count}}</span>
+              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600; padding: 2px 7px; border-radius: 10px; background: var(--bg); color: var(--ink)">{{k.count}}</span>
               <button class="sb-btn sb-icon" aria-expanded="{{k.expandedStr}}" aria-label="{{k.toggleLabel}}" onPointerDown="{{stop}}" onClick="{{k.toggle}}" style="height: 36px; width: 36px; border-color: transparent; background: transparent">
                 <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 200ms; transform: rotate({{k.chevron}}deg)"><path d="m3 5 4 4 4-4"></path></svg>
               </button>
             </div>
             <sc-if value="{{k.showEmpty}}" hint-placeholder-val="{{ false }}">
-              <div style="padding: 18px 12px; font-size: 12px; color: #9aa3b2">No one on shift</div>
+              <div style="padding: 18px 12px; font-size: 12px; color: var(--muted)">No one on shift</div>
             </sc-if>
           </div>
         </sc-for>
@@ -354,8 +363,8 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
   </sc-if>
 
   <sc-if value="{{panelOpen}}" hint-placeholder-val="{{ false }}">
-  <aside aria-label="Details" style="flex: 1 1 380px; min-width: 0; max-height: 100%; display: flex; flex-direction: column; background: #12151b; border-left: 1px solid #232833; overflow: hidden">
-    <div style="display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid #232833">
+  <aside aria-label="Details" style="flex: 1 1 380px; min-width: 0; max-height: 100%; display: flex; flex-direction: column; background: var(--panel); border-left: 1px solid var(--line); overflow: hidden">
+    <div style="display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line)">
       <button class="sb-btn" aria-pressed="{{personTabPressed}}" onClick="{{tabPerson}}" style="height: 34px">Person</button>
       <button class="sb-btn" aria-pressed="{{mdPressed}}" onClick="{{tabMd}}" style="height: 34px">Markdown</button>
       <button class="sb-btn sb-icon" aria-label="Close panel" onClick="{{closePanel}}" style="margin-left: auto; border-color: transparent; background: transparent"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 8 8M10 2 2 10"></path></svg></button>
@@ -364,21 +373,19 @@ a{color:#8fb4ff}a:hover{color:#b9d0ff}
     <sc-if value="{{panelMd}}" hint-placeholder-val="{{ false }}">
       <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; padding: 12px">
         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #c3c9d4">schedule.md</span>
-          <span style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: {{mdStatusBg}}; color: #0e1014">{{mdStatus}}</span>
-          <label class="sb-btn" style="height: 34px; margin-left: auto">
-            Open .md
-            <input type="file" accept=".md,text/markdown,text/plain" onChange="{{onMdFile}}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none">
-          </label>
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: var(--ink-2)">schedule.md</span>
+          <span style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: {{mdStatusBg}}; color: var(--on-color)">{{mdStatus}}</span>
+          <button class="sb-btn" onClick="{{showOpen}}" style="height: 34px; margin-left: auto">Open…</button>
           <button class="sb-btn" onClick="{{copyMd}}" style="height: 34px">Copy</button>
+          <button class="sb-btn" onClick="{{downloadMd}}" style="height: 34px">Download</button>
         </div>
         <sc-if value="{{hasParseError}}" hint-placeholder-val="{{ false }}">
-          <div role="alert" style="padding: 8px 10px; border-radius: 8px; border: 1px solid #e06c75; background: rgba(224,108,117,.12); color: #f6c2c6; font-size: 12px; line-height: 1.45">{{parseError}}. The views show the last valid version, and UI edits are paused until this is fixed.</div>
+          <div role="alert" style="padding: 8px 10px; border-radius: 8px; border: 1px solid var(--bad); background: rgba(224,108,117,.12); color: var(--bad-ink); font-size: 12px; line-height: 1.45">{{parseError}}. The views show the last valid version, and UI edits are paused until this is fixed.</div>
         </sc-if>
-        <textarea aria-label="Schedule markdown" spellcheck="false" value="{{md}}" onChange="{{onMd}}" style="flex: 1; min-height: 320px; resize: none; background: #0b0d11; border: 1px solid #2a303b; border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.6; color: #d6dbe4; white-space: pre; overflow: auto; tab-size: 2"></textarea>
-        <details style="font-size: 12px; color: #c3c9d4">
-          <summary style="cursor: pointer; padding: 4px 0">Format reference</summary>
-          <pre style="margin: 8px 0 0; padding: 10px; border-radius: 8px; background: #0b0d11; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; line-height: 1.6; color: #c3c9d4; white-space: pre; overflow: auto"># Title
+        <textarea aria-label="Schedule markdown" spellcheck="false" value="{{md}}" onChange="{{onMd}}" style="flex: 1; min-height: 320px; resize: none; background: var(--well); border: 1px solid var(--line-2); border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.6; color: var(--ink-2); white-space: pre; overflow: auto; tab-size: 2"></textarea>
+        <details style="font-size: 12px; color: var(--ink-2)">
+          <summary style="cursor: pointer; padding: 4px 0">Format reference · <a href="https://github.com/aaronp/schedule/blob/master/schema.md" target="_blank" rel="noopener">full schema</a></summary>
+          <pre style="margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--well); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; line-height: 1.6; color: var(--ink-2); white-space: pre; overflow: auto"># Title
 hours: 08:00-24:00
 background: sample:floorplan | local | https://…
 background-opacity: 0.5
@@ -403,7 +410,7 @@ background-scale: 1          (0.25-3, from the top-left)
 
     <sc-if value="{{panelPerson}}" hint-placeholder-val="{{ false }}">
       <sc-if value="{{noInsp}}" hint-placeholder-val="{{ false }}">
-        <p style="margin: 0; padding: 20px 16px; font-size: 13px; color: #9aa3b2">Select someone in the roster, a swimlane or the layout to annotate them.</p>
+        <p style="margin: 0; padding: 20px 16px; font-size: 13px; color: var(--muted)">Select someone in the roster, a swimlane or the layout to annotate them.</p>
       </sc-if>
       <sc-if value="{{hasInsp}}" hint-placeholder-val="{{ true }}">
         <div style="flex: 1; min-height: 0; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 20px">
@@ -411,7 +418,7 @@ background-scale: 1          (0.25-3, from the top-left)
             <span style="width: 40px; height: 40px; border-radius: 50%; flex: none; background: {{insp.dot}}"></span>
             <div style="display: flex; flex-direction: column; min-width: 0">
               <span style="font-size: 18px; font-weight: 600">{{insp.name}}</span>
-              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #9aa3b2">id {{insp.slug}}</span>
+              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: var(--muted)">id {{insp.slug}}</span>
             </div>
           </div>
           <div class="sb-field">
@@ -438,20 +445,20 @@ background-scale: 1          (0.25-3, from the top-left)
           <div class="sb-field">
             <span class="sb-lbl">Shifts · {{dateShort}}</span>
             <sc-for list="{{insp.shifts}}" as="sh" hint-placeholder-count="1">
-              <div style="display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 10px; border: 1px solid #2a303b; border-radius: 8px; background: #171b22">
+              <div style="display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 10px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--raised)">
                 <span style="width: 10px; height: 10px; border-radius: 3px; flex: none; background: {{sh.color}}"></span>
                 <span style="font-size: 13px; flex: 1">{{sh.team}}</span>
-                <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #c3c9d4">{{sh.range}}</span>
+                <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: var(--ink-2)">{{sh.range}}</span>
                 <button class="sb-btn sb-icon" aria-label="{{sh.removeLabel}}" onClick="{{sh.remove}}" style="height: 32px; width: 32px; border-color: transparent; background: transparent"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
               </div>
             </sc-for>
             <sc-if value="{{insp.noShifts}}" hint-placeholder-val="{{ false }}">
-              <p style="margin: 0; font-size: 12px; color: #9aa3b2">No shifts. Drag them from the roster onto a team.</p>
+              <p style="margin: 0; font-size: 12px; color: var(--muted)">No shifts. Drag them from the roster onto a team.</p>
             </sc-if>
           </div>
           <div class="sb-field">
             <span class="sb-lbl">Availability · {{dateShort}}</span>
-            <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #9aa3b2">Any "available" window limits them to those hours. "Unavailable" blocks time. Shifts that overlap blocked time get a warning.</p>
+            <p style="margin: 0; font-size: 12px; line-height: 1.5; color: var(--muted)">Any "available" window limits them to those hours. "Unavailable" blocks time. Shifts that overlap blocked time get a warning.</p>
             <sc-for list="{{insp.avail}}" as="a" hint-placeholder-count="1">
               <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
                 <select class="sb-sel" aria-label="Availability type" value="{{a.kindVal}}" onChange="{{a.onKind}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif">
@@ -461,7 +468,7 @@ background-scale: 1          (0.25-3, from the top-left)
                 <select class="sb-sel" aria-label="From" value="{{a.startVal}}" onChange="{{a.onStart}}">
                   <sc-for list="{{timeOptions}}" as="o" hint-placeholder-count="4"><option value="{{o.value}}">{{o.label}}</option></sc-for>
                 </select>
-                <span style="color: #9aa3b2">to</span>
+                <span style="color: var(--muted)">to</span>
                 <select class="sb-sel" aria-label="To" value="{{a.endVal}}" onChange="{{a.onEnd}}">
                   <sc-for list="{{timeOptions}}" as="o" hint-placeholder-count="4"><option value="{{o.value}}">{{o.label}}</option></sc-for>
                 </select>
@@ -477,6 +484,33 @@ background-scale: 1          (0.25-3, from the top-left)
   </sc-if>
 </div>
 
+<sc-if value="{{openOpen}}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{openBackdrop}}" onKeyDown="{{openKey}}" style="position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.55)">
+    <div role="dialog" aria-modal="true" aria-labelledby="sb-open-h" style="width: min(520px, 100%); display: flex; flex-direction: column; gap: 14px; padding: 16px; background: var(--panel); border: 1px solid var(--line-pop); border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,.55)">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <h2 id="sb-open-h" style="margin: 0; flex: 1; font-size: 15px; font-weight: 600">Open a schedule</h2>
+        <button class="sb-btn sb-icon" aria-label="Close" onClick="{{hideOpen}}" style="height: 32px; width: 32px; border-color: transparent; background: transparent"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
+      </div>
+      <label onDragOver="{{openDragOver}}" onDragLeave="{{openDragLeave}}" onDrop="{{openDrop}}" style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px 16px; border: 2px dashed {{openDropBorder}}; border-radius: 10px; background: {{openDropBg}}; cursor: pointer; text-align: center">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.5V2M4 5l3-3 3 3M2 10v2h10v-2"></path></svg>
+        <span style="font-size: 13px">Drop a .md file here, or <span style="color: var(--link); text-decoration: underline">choose a file</span></span>
+        <input type="file" accept=".md,.markdown,.txt,text/markdown,text/plain" onChange="{{onMdFile}}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none">
+      </label>
+      <form onSubmit="{{openUrlSubmit}}" style="display: flex; flex-direction: column; gap: 6px">
+        <label for="sb-open-url" class="sb-lbl">Or open from a URL</label>
+        <div style="display: flex; gap: 6px">
+          <input id="sb-open-url" class="sb-input" type="url" placeholder="https://…/schedule.md" value="{{openUrl}}" onChange="{{onOpenUrl}}" style="flex: 1; font-family: 'JetBrains Mono', ui-monospace, monospace">
+          <button class="sb-btn" type="submit" disabled="{{openUrlDisabled}}" style="background: var(--ink); color: var(--bg); border-color: var(--ink)">{{openUrlLabel}}</button>
+        </div>
+        <span style="font-size: 11.5px; line-height: 1.45; color: var(--muted)">GitHub file links work. To share a schedule, link to it with ?src= instead. Opening replaces the schedule saved in this browser.</span>
+      </form>
+      <sc-if value="{{hasOpenError}}" hint-placeholder-val="{{ false }}">
+        <div role="alert" style="padding: 8px 10px; border-radius: 8px; border: 1px solid var(--bad); background: rgba(224,108,117,.12); color: var(--bad-ink); font-size: 12px; line-height: 1.45">{{openError}}</div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
   <div role="alert" style="position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 100; max-width: min(560px, calc(100% - 32px)); display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 14px; border-radius: 10px; background: {{toastBg}}; border: 1px solid {{toastBorder}}; color: {{toastColor}}; font-size: 13px; box-shadow: 0 12px 32px rgba(0,0,0,.5)">
     <span style="flex: 1">{{toast}}</span>
@@ -489,12 +523,20 @@ background-scale: 1          (0.25-3, from the top-left)
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    const md = Component.seed();
-    const model = Component.parse(md);
+    // ?src= shows that file (not autosaved, so it never overwrites the saved one); otherwise the file saved in this browser, or the sample.
+    const q = new URLSearchParams(location.search);
+    this.src = q.get('src');
+    const saved = this.src === null ? Component.store('get', Component.KEYS.md) : null;
+    const md = saved ?? Component.seed();
+    let model, parseError = null;
+    try { model = Component.parse(md); } catch (err) { model = Component.parse(Component.seed()); parseError = err.message; }
+    const theme = [q.get('theme'), Component.store('get', Component.KEYS.theme)].find((t) => Component.themes().some((x) => x.value === t)) ?? 'night';
+    this.savedMd = md;
     this.state = {
-      md: md, model: model, parseError: null,
-      view: 'swim', date: model.dates[0], t: 14 * 60,
-      collapsed: {}, selected: null, panel: 'none',
+      md: md, model: model, parseError: parseError, theme: theme,
+      openOpen: false, openUrl: this.src ?? '', openBusy: false, openError: null, openDragging: false,
+      view: 'swim', date: model.dates[0] ?? null, t: 14 * 60, panel: parseError !== null ? 'md' : 'none',
+      collapsed: {}, selected: null,
       playing: false, toast: null, query: '',
       copyOpen: false, copyMode: 'replace',
       dragOverTeam: null, dragOverDock: false,
@@ -503,6 +545,15 @@ class Component extends DCLogic {
     };
     this.timer = null;
     this.toastTimer = null;
+  }
+
+  componentDidMount() {
+    if (this.src !== null) this.openUrl(this.src, true).catch((err) => { this.setState({ openOpen: true, openError: "Can't load " + this.src + ': ' + err.message }); });
+  }
+  componentDidUpdate() {
+    if (this.src === null && this.state.md !== this.savedMd) { this.savedMd = this.state.md; Component.store('set', Component.KEYS.md, this.state.md); }
+    if (this.state.openOpen && !this.wasOpen) { const el = document.getElementById('sb-open-url'); if (el !== null) el.focus(); }
+    this.wasOpen = this.state.openOpen;
   }
 
   componentWillUnmount() {
@@ -606,6 +657,15 @@ class Component extends DCLogic {
       '- 1 12:00-18:00',
       ''
     ].join('\n');
+  }
+
+  static themes() {
+    return [{ value: 'night', label: 'Night shift' }, { value: 'paper', label: 'Paper' }, { value: 'blueprint', label: 'Blueprint' }, { value: 'warm', label: 'Warm' }];
+  }
+  static KEYS = { md: 'team-scheduler:markdown:v1', theme: 'team-scheduler:theme:v1' };
+  // localStorage can be missing or blocked (private mode); the app still works, it just doesn't remember.
+  static store(op, key, value) {
+    try { return op === 'get' ? localStorage.getItem(key) : localStorage.setItem(key, value); } catch (err) { return null; }
   }
 
   static palette() {
@@ -1161,8 +1221,47 @@ class Component extends DCLogic {
   onMdFile(e) {
     const file = e.target.files[0];
     e.target.value = '';
-    if (file === undefined) return;
-    file.text().then((text) => this.setMd(text), (err) => this.toast('Could not read ' + file.name + ': ' + err.message, 'error'));
+    this.openFile(file);
+  }
+  openFile(file) {
+    if (file === undefined) { this.setState({ openError: 'Drop or choose a .md file.' }); return; }
+    if (!/\.(md|markdown|txt)$/i.test(file.name)) { this.setState({ openError: '"' + file.name + '" is not a markdown file (.md).' }); return; }
+    file.text().then((text) => this.adopt(text, file.name), (err) => this.setState({ openError: 'Could not read ' + file.name + ': ' + err.message }));
+  }
+  // Fetches a schedule (absolute, or relative to the page; GitHub "blob" links are fetched raw). Other hosts must allow CORS.
+  async openUrl(raw, fromSrc) {
+    const url = new URL(raw.trim(), location.href).href.replace(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\//, 'https://raw.githubusercontent.com/$1/$2/');
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    if (/^\s*<(!doctype|html)/i.test(text)) throw new Error('that is a web page, not a markdown file');
+    this.adopt(text, url.split('/').pop(), fromSrc === true);
+  }
+  // A file opened from the dialog becomes the saved copy (and drops ?src= from the address bar); the ?src= file on load stays read-only.
+  adopt(text, name, fromSrc) {
+    if (!fromSrc && this.src !== null) {
+      this.src = null;
+      const q = new URLSearchParams(location.search); q.delete('src');
+      history.replaceState(null, '', location.pathname + (q.toString() === '' ? '' : '?' + q) + location.hash);
+    }
+    this.setMd(text);
+    this.setState((s) => ({ openOpen: false, openError: null, openDragging: false, panel: s.parseError !== null ? 'md' : s.panel }));
+    if (!fromSrc) this.toast('Opened ' + name, 'info');
+  }
+  submitOpenUrl() {
+    if (this.state.openUrl.trim() === '' || this.state.openBusy) return;
+    this.setState({ openBusy: true, openError: null });
+    this.openUrl(this.state.openUrl).then(
+      () => this.setState({ openBusy: false }),
+      (err) => this.setState({ openBusy: false, openError: "Can't open " + this.state.openUrl.trim() + ': ' + err.message }));
+  }
+  downloadMd() {
+    const name = (this.state.model.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'schedule') + '.md';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([this.state.md], { type: 'text/markdown;charset=utf-8' }));
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 0);
   }
 
   // ---------- View model ----------
@@ -1221,7 +1320,7 @@ class Component extends DCLogic {
             left: xOf(s.start), width: Math.max((s.end - s.start) * pxm, 8),
             bg: p.color ?? team.color, label: label, warn: warn,
             title: p.name + ' · ' + team.name + ' ' + label + (warn ? ' · overlaps unavailable time' : '') + '. Drag to move, drag edges to resize, click to annotate.',
-            ring: warn ? '0 0 0 2px #0e1014, 0 0 0 4px #f2b33d' : (dragging ? '0 6px 18px rgba(0,0,0,.5)' : 'none'),
+            ring: warn ? '0 0 0 2px var(--bg), 0 0 0 4px var(--accent)' : (dragging ? '0 6px 18px rgba(0,0,0,.5)' : 'none'),
             z: dragging ? 2 : 1,
             downMove: (e) => this.barDown(e, s, 'move', pxm),
             downStart: (e) => this.barDown(e, s, 'start', pxm),
@@ -1233,8 +1332,8 @@ class Component extends DCLogic {
         return {
           name: p.name, role: p.role ?? '', dot: p.color ?? team.color, bars: bars,
           blocks: blocks.map((b) => ({ left: xOf(b.start), width: (b.end - b.start) * pxm })),
-          labelBg: st.selected === slug ? '#1d2330' : '#12151b',
-          fade: fadeOf(slug), matchRing: hitOf(slug) ? 'inset 3px 0 0 #f2b33d' : 'none',
+          labelBg: st.selected === slug ? 'var(--select)' : 'var(--panel)',
+          fade: fadeOf(slug), matchRing: hitOf(slug) ? 'inset 3px 0 0 var(--accent)' : 'none',
           select: () => this.select(slug)
         };
       });
@@ -1247,7 +1346,7 @@ class Component extends DCLogic {
         stat: rows.length + (rows.length === 1 ? ' person · ' : ' people · ') + C.fmtDur(total),
         rows: rows, empty: rows.length === 0,
         mini: ts.map((s, i) => ({ left: xOf(s.start), width: Math.max((s.end - s.start) * pxm, 4), top: 7 + (i % 4) * 8, bg: personBy(s.slug).color ?? team.color, fade: fadeOf(s.slug) })),
-        dropBg: st.dragOverTeam === team.name ? 'rgba(242,179,61,.08)' : 'transparent',
+        dropBg: st.dragOverTeam === team.name ? 'var(--accent-tint)' : 'transparent',
         dragOver: (e) => this.dragOverTeam(e, team.name),
         dragLeave: (e) => this.dragLeave(e),
         drop: (e) => this.dropOnLane(e, team.name, pxm, shiftHours)
@@ -1261,17 +1360,17 @@ class Component extends DCLogic {
       const blocks = hasDate ? C.unavailBlocks(p, date, H) : [];
       const offAll = blocks.some((b) => b.start <= H.start && b.end >= H.end);
       const mine = onDay[p.slug] || [];
-      let sub, subColor = '#9aa3b2';
+      let sub, subColor = 'var(--muted)';
       if (mine.length > 0) {
         sub = mine[0].team + ' ' + C.fmt(mine[0].start) + '–' + C.fmt(mine[0].end) + (mine.length > 1 ? ' +' + (mine.length - 1) : '');
       } else if (offAll) {
-        sub = 'Unavailable all day'; subColor = '#e88a92';
+        sub = 'Unavailable all day'; subColor = 'var(--bad-soft)';
       } else {
         sub = (p.role ?? 'No role') + (blocks.length > 0 ? ' · partly unavailable' : '');
       }
       return {
         slug: p.slug, name: p.name, sub: sub, subColor: subColor, dot: p.color ?? '#8a93a3',
-        border: st.selected === p.slug ? '#e7eaf0' : (hitOf(p.slug) ? '#f2b33d' : '#2a303b'),
+        border: st.selected === p.slug ? 'var(--ink)' : (hitOf(p.slug) ? 'var(--accent)' : 'var(--line-2)'),
         fade: fadeOf(p.slug),
         aria: p.name + ', ' + sub + '. Drag onto a team to schedule.',
         select: () => this.select(p.slug),
@@ -1297,7 +1396,7 @@ class Component extends DCLogic {
         height: HEAD_H + (collapsed ? 0 : Math.max(members.length, 1) * ROW_H + PAD * 2),
         count: members.length, showEmpty: !collapsed && members.length === 0,
         transition: dragging ? 'none' : 'height 560ms cubic-bezier(.2,.8,.2,1), left 300ms ease, top 300ms ease',
-        border: st.dragOverTeam === team.name ? '#f2b33d' : '#2a303b',
+        border: st.dragOverTeam === team.name ? 'var(--accent)' : 'var(--line-2)',
         cursor: dragging ? 'grabbing' : 'grab', z: dragging ? 15 : 10,
         expandedStr: String(!collapsed), chevron: collapsed ? -90 : 0,
         toggleLabel: (collapsed ? 'Expand ' : 'Collapse ') + team.name,
@@ -1315,7 +1414,7 @@ class Component extends DCLogic {
     const chips = m.people.map((p) => {
       const a = activeOf(p.slug);
       const status = hasDate ? C.statusAt(p, date, t, H) : 'open';
-      let x, y, w, op = 1, sc = 1, sub, subColor = '#9aa3b2', frozen = false, border = '#2a303b';
+      let x, y, w, op = 1, sc = 1, sub, subColor = 'var(--muted)', frozen = false, border = 'var(--line-2)';
       if (a !== undefined) {
         const c = cardBy[a.team];
         if (c === undefined) throw new Error('bug: this should never happen (shift references missing team ' + a.team + ')');
@@ -1323,15 +1422,15 @@ class Component extends DCLogic {
         x = c.left + PAD; w = CARD_W - PAD * 2;
         if (c.collapsed) { y = c.top + 7; op = 0; sc = 0.85; } else { y = c.top + HEAD_H + PAD + c.members.indexOf(p.slug) * ROW_H; }
         sub = (p.role !== null ? p.role + ' · ' : '') + 'until ' + C.fmt(a.end);
-        if (status === 'unavailable') { sub = 'Unavailable · until ' + C.fmt(a.end); subColor = '#f2b33d'; border = '#f2b33d'; }
+        if (status === 'unavailable') { sub = 'Unavailable · until ' + C.fmt(a.end); subColor = 'var(--accent)'; border = 'var(--accent)'; }
       } else {
         x = 12; y = DOCK_HEAD + dockSlugs.indexOf(p.slug) * ROW_H; w = DOCK_W - 24;
         const next = dayShifts.find((s) => s.slug === p.slug && s.start > t);
-        if (status === 'unavailable') { sub = 'Unavailable'; subColor = '#e88a92'; }
+        if (status === 'unavailable') { sub = 'Unavailable'; subColor = 'var(--bad-soft)'; }
         else sub = next !== undefined ? 'Next: ' + next.team + ' ' + C.fmt(next.start) : (p.role ?? 'No more shifts');
       }
-      if (hitOf(p.slug)) border = '#f2b33d';
-      if (st.selected === p.slug) border = '#e7eaf0';
+      if (hitOf(p.slug)) border = 'var(--accent)';
+      if (st.selected === p.slug) border = 'var(--ink)';
       const shown = op * fadeOf(p.slug);
       const tr = frozen ? 'none' : 'transform 650ms ' + ease + ', opacity 380ms ease, width 650ms ' + ease;
       return {
@@ -1371,7 +1470,7 @@ class Component extends DCLogic {
       noColorPressed: String(sel.color === null),
       swatches: C.palette().map((c) => ({
         c: c, label: 'Color ' + c, pressed: String(sel.color === c),
-        ring: sel.color === c ? '0 0 0 2px #12151b, 0 0 0 4px #e7eaf0' : 'none',
+        ring: sel.color === c ? '0 0 0 2px var(--panel), 0 0 0 4px var(--ink)' : 'none',
         pick: () => this.commit((mm) => C.updatePerson(mm, sel.slug, { color: c }))
       })),
       clearColor: () => this.commit((mm) => C.updatePerson(mm, sel.slug, { color: null })),
@@ -1445,8 +1544,8 @@ class Component extends DCLogic {
       onQuery: (e) => this.setState({ query: e.target.value }),
       clearQuery: () => this.setState({ query: '' }),
       matchCount: matchCount + '/' + m.people.length,
-      matchColor: matchCount === 0 ? '#e88a92' : '#f2b33d',
-      queryBorder: hasQuery ? (matchCount === 0 ? '#e06c75' : '#f2b33d') : '#2a303b',
+      matchColor: matchCount === 0 ? 'var(--bad-soft)' : 'var(--accent)',
+      queryBorder: hasQuery ? (matchCount === 0 ? 'var(--bad)' : 'var(--accent)') : 'var(--line-2)',
       mdPressed: String(st.panel === 'md'),
       personTabPressed: String(st.panel === 'person'),
       toggleMd: () => this.setState({ panel: st.panel === 'md' ? 'none' : 'md' }),
@@ -1481,7 +1580,7 @@ class Component extends DCLogic {
 
       stageW: DOCK_W + mapW, stageH: stageH, mapW: mapW,
       cards: cards, chips: chips, dockCount: dockSlugs.length,
-      dockBg: st.dragOverDock ? '#1a1d24' : '#12151b',
+      dockBg: st.dragOverDock ? 'var(--drop)' : 'var(--panel)',
       dockDragOver: (e) => { e.preventDefault(); if (!st.dragOverDock) this.setState({ dragOverDock: true }); },
       dockDragLeave: (e) => this.dragLeave(e),
       dockDrop: (e) => this.dropOnDock(e, t),
@@ -1515,17 +1614,31 @@ class Component extends DCLogic {
       md: st.md, onMd: (e) => this.setMd(e.target.value),
       hasParseError: st.parseError !== null, parseError: st.parseError ?? '',
       mdStatus: st.parseError !== null ? 'Error' : 'In sync',
-      mdStatusBg: st.parseError !== null ? '#e88a92' : '#3fb68b',
+      mdStatusBg: st.parseError !== null ? 'var(--bad-soft)' : 'var(--good)',
       onMdFile: (e) => this.onMdFile(e),
+      downloadMd: () => this.downloadMd(),
+      theme: st.theme, themes: C.themes(),
+      onTheme: (e) => { this.setState({ theme: e.target.value }); C.store('set', C.KEYS.theme, e.target.value); },
+      openOpen: st.openOpen, showOpen: () => this.setState({ openOpen: true, openError: null }), hideOpen: () => this.setState({ openOpen: false }),
+      openBackdrop: (e) => { if (e.target === e.currentTarget) this.setState({ openOpen: false }); },
+      openKey: (e) => { if (e.key === 'Escape') this.setState({ openOpen: false }); },
+      openDragOver: (e) => { e.preventDefault(); if (!st.openDragging) this.setState({ openDragging: true }); },
+      openDragLeave: () => this.setState({ openDragging: false }),
+      openDrop: (e) => { e.preventDefault(); this.setState({ openDragging: false }); this.openFile(e.dataTransfer.files[0]); },
+      openDropBorder: st.openDragging ? 'var(--accent)' : 'var(--line-2)', openDropBg: st.openDragging ? 'var(--accent-tint)' : 'var(--well)',
+      openUrl: st.openUrl, onOpenUrl: (e) => this.setState({ openUrl: e.target.value }),
+      openUrlSubmit: (e) => { e.preventDefault(); this.submitOpenUrl(); },
+      openUrlDisabled: st.openUrl.trim() === '' || st.openBusy, openUrlLabel: st.openBusy ? 'Opening…' : 'Open',
+      hasOpenError: st.openError !== null, openError: st.openError ?? '',
       copyMd: () => {
         navigator.clipboard.writeText(st.md).then(() => this.toast('Markdown copied to clipboard', 'info'), (err) => this.toast('Copy failed: ' + err.message, 'error'));
       },
       hasInsp: insp !== null, noInsp: insp === null, insp: insp, timeOptions: timeOptions,
 
       hasToast: st.toast !== null, toast: st.toast !== null ? st.toast.msg : '',
-      toastBg: st.toast !== null && st.toast.kind === 'info' ? '#16251f' : '#2a1a1d',
-      toastBorder: st.toast !== null && st.toast.kind === 'info' ? '#3fb68b' : '#e06c75',
-      toastColor: st.toast !== null && st.toast.kind === 'info' ? '#bfe9d6' : '#f6c2c6',
+      toastBg: st.toast !== null && st.toast.kind === 'info' ? 'var(--good-bg)' : 'var(--bad-bg)',
+      toastBorder: st.toast !== null && st.toast.kind === 'info' ? 'var(--good)' : 'var(--bad)',
+      toastColor: st.toast !== null && st.toast.kind === 'info' ? 'var(--good-ink)' : 'var(--bad-ink)',
       dismissToast: () => { clearTimeout(this.toastTimer); this.setState({ toast: null }); }
     };
   }
