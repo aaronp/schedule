@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Team Scheduler</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e1014}
+a{color:#8fb4ff}a:hover{color:#b9d0ff}
+.sb *{box-sizing:border-box}
+.sb button,.sb input,.sb select,.sb textarea{font:inherit;color:inherit}
+.sb :focus-visible{outline:2px solid #f2b33d;outline-offset:2px}
+.sb-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 12px;border-radius:8px;border:1px solid #2a303b;background:#171b22;color:#e7eaf0;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap}
+.sb-btn:hover{background:#1f2430;border-color:#3a4252}
+.sb-btn[aria-pressed="true"]{background:#e7eaf0;color:#0e1014;border-color:#e7eaf0}
+.sb-btn:disabled{opacity:.4;cursor:default}
+.sb-icon{width:40px;padding:0}
+.sb-chip{display:flex;align-items:center;gap:10px;padding:4px 10px;background:#1a1e26;border:1px solid #2a303b;border-radius:9px;color:#e7eaf0;text-align:left;cursor:grab}
+.sb-chip:hover{border-color:#4a5263;background:#1e232d}
+.sb-x{opacity:0}
+.sb-bar:hover .sb-x,.sb-x:focus-visible{opacity:1}
+.sb-handle{position:absolute;top:0;bottom:0;width:9px;cursor:ew-resize;touch-action:none}
+.sb-range{accent-color:#f2b33d}
+.sb-hatch{background:repeating-linear-gradient(135deg,rgba(232,138,146,.22) 0 5px,transparent 5px 11px)}
+.sb-field{display:flex;flex-direction:column;gap:6px}
+.sb-field label,.sb-lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9aa3b2;font-weight:600}
+.sb-input{height:40px;padding:0 10px;border-radius:8px;border:1px solid #2a303b;background:#0b0d11;color:#e7eaf0;font-size:13px;min-width:0}
+.sb-input:focus{border-color:#4a5263}
+.sb-sel{height:36px;padding:0 6px;border-radius:7px;border:1px solid #2a303b;background:#0b0d11;color:#e7eaf0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace}
+@media (prefers-reduced-motion: reduce){.sb-anim{transition:none !important}}
+</style>
+</helmet>
+<div class="sb" style="height: 100vh; display: flex; flex-direction: column; background: #0e1014; color: #e7eaf0; font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; overflow: hidden">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 10px 16px; border-bottom: 1px solid #232833; background: #12151b">
+  <div style="display: flex; align-items: center; gap: 10px; min-width: 0">
+    <svg aria-hidden="true" width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#f2b33d" stroke-width="2" stroke-linecap="round"><path d="M3 7h12"></path><path d="M9 13h14"></path><path d="M5 19h9"></path></svg>
+    <div style="display: flex; flex-direction: column; min-width: 0">
+      <span style="font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{title}}</span>
+      <span style="font-size: 12px; color: #9aa3b2">{{dateLong}}</span>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 6px">
+    <button class="sb-btn sb-icon" aria-label="Previous day" disabled="{{noPrev}}" onClick="{{prevDay}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"></path></svg></button>
+    <sc-if value="{{hasDate}}" hint-placeholder-val="{{ true }}">
+      <select class="sb-sel" aria-label="Day" value="{{date}}" onChange="{{onDate}}" style="height: 40px; padding: 0 10px; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 13px">
+        <sc-for list="{{dateOptions}}" as="d" hint-placeholder-count="2"><option value="{{d.value}}">{{d.label}}</option></sc-for>
+      </select>
+    </sc-if>
+    <button class="sb-btn sb-icon" aria-label="Next day" disabled="{{noNext}}" onClick="{{nextDay}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"></path></svg></button>
+    <button class="sb-btn" onClick="{{addDay}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2v10M2 7h10"></path></svg>Day</button>
+    <div style="position: relative">
+      <button class="sb-btn sb-icon" aria-label="Copy shifts from another day" aria-expanded="{{copyOpenStr}}" aria-pressed="{{copyOpenStr}}" disabled="{{noCopySource}}" onClick="{{toggleCopy}}" title="Copy shifts from another day">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8.5" height="8.5" rx="1.5"></rect><path d="M10.5 3.5V3A1.5 1.5 0 0 0 9 1.5H3A1.5 1.5 0 0 0 1.5 3v6A1.5 1.5 0 0 0 3 10.5h.5"></path></svg>
+      </button>
+      <sc-if value="{{copyOpen}}" hint-placeholder-val="{{ false }}">
+        <div role="dialog" aria-label="Copy shifts from another day" style="position: absolute; top: 46px; left: 0; z-index: 50; width: 300px; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: #171b22; border: 1px solid #353c4a; border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,.55)">
+          <div style="display: flex; align-items: center; gap: 8px">
+            <span style="font-size: 13px; font-weight: 600; flex: 1">Copy shifts into {{dateShort}}</span>
+            <button class="sb-btn sb-icon" aria-label="Close" onClick="{{toggleCopy}}" style="height: 32px; width: 32px; border-color: transparent; background: transparent"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
+          </div>
+          <div role="group" aria-label="Copy mode" style="display: flex; gap: 4px; padding: 3px; border: 1px solid #2a303b; border-radius: 9px; background: #0e1014">
+            <button class="sb-btn" aria-pressed="{{copyReplacePressed}}" onClick="{{copyModeReplace}}" style="flex: 1; height: 32px; border-color: transparent">Replace day</button>
+            <button class="sb-btn" aria-pressed="{{copyMergePressed}}" onClick="{{copyModeMerge}}" style="flex: 1; height: 32px; border-color: transparent">Add to day</button>
+          </div>
+          <p style="margin: 0; font-size: 11.5px; line-height: 1.45; color: #9aa3b2">{{copyHelp}}</p>
+          <div style="display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow: auto">
+            <sc-for list="{{copySources}}" as="cs" hint-placeholder-count="2">
+              <button class="sb-btn" disabled="{{cs.empty}}" onClick="{{cs.pick}}" style="justify-content: space-between; width: 100%">
+                <span>{{cs.label}}</span>
+                <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2">{{cs.count}}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div role="group" aria-label="View" style="display: flex; gap: 4px; padding: 3px; border: 1px solid #2a303b; border-radius: 10px; background: #0e1014">
+    <button class="sb-btn" aria-pressed="{{swimPressed}}" onClick="{{viewSwim}}" style="height: 34px; border-color: transparent"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h7M5 8h9M3 12h6"></path></svg>Swimlanes</button>
+    <button class="sb-btn" aria-pressed="{{layoutPressed}}" onClick="{{viewLayout}}" style="height: 34px; border-color: transparent"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5z"></path><path d="M5.5 2v10.5M10.5 3.5V14"></path></svg>Layout</button>
+  </div>
+
+  <div style="flex: 1 1 340px; min-width: 260px; display: flex; align-items: center; gap: 10px">
+    <button class="sb-btn sb-icon" aria-label="{{playLabel}}" onClick="{{togglePlay}}">
+      <sc-if value="{{playing}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="2.5" y="2" width="3" height="10" rx="1"></rect><rect x="8.5" y="2" width="3" height="10" rx="1"></rect></svg></sc-if>
+      <sc-if value="{{notPlaying}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3.5 2.2v9.6L11.8 7z"></path></svg></sc-if>
+    </button>
+    <div style="position: relative; flex: 1; height: 40px; display: flex; align-items: flex-end">
+      <div style="position: absolute; left: 8px; right: 8px; top: 2px; height: 12px">
+        <sc-for list="{{marks}}" as="mk" hint-placeholder-count="6">
+          <button aria-label="{{mk.label}}" onClick="{{mk.jump}}" style="position: absolute; left: {{mk.left}}%; top: 0; width: 10px; height: 12px; margin-left: -5px; padding: 0; border: 0; background: transparent; cursor: pointer; display: flex; justify-content: center"><span style="display: block; width: 2px; height: 9px; background: #59627a; border-radius: 1px"></span></button>
+        </sc-for>
+      </div>
+      <input class="sb-range" type="range" aria-label="Time of day" min="{{hStart}}" max="{{hEnd}}" step="15" value="{{t}}" onChange="{{onTime}}" style="width: 100%; margin: 0 0 6px">
+    </div>
+    <output style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 20px; font-weight: 600; color: #f2b33d; min-width: 64px">{{timeLabel}}</output>
+  </div>
+
+  <div role="search" style="position: relative; display: flex; align-items: center; flex: 0 1 260px; min-width: 180px">
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#9aa3b2" stroke-width="1.7" stroke-linecap="round" style="position: absolute; left: 11px; pointer-events: none"><circle cx="6" cy="6" r="4.2"></circle><path d="m9.2 9.2 3.3 3.3"></path></svg>
+    <input class="sb-input" type="search" aria-label="Filter people by name, id, role or team" placeholder="Filter people…" value="{{query}}" onChange="{{onQuery}}" style="width: 100%; padding-left: 32px; padding-right: 74px; border-color: {{queryBorder}}">
+    <sc-if value="{{hasQuery}}" hint-placeholder-val="{{ false }}">
+      <span style="position: absolute; right: 40px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: {{matchColor}}; pointer-events: none">{{matchCount}}</span>
+      <button class="sb-btn sb-icon" aria-label="Clear filter" onClick="{{clearQuery}}" style="position: absolute; right: 2px; height: 36px; width: 36px; border-color: transparent; background: transparent"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
+    </sc-if>
+  </div>
+
+  <button class="sb-btn" aria-pressed="{{mdPressed}}" onClick="{{toggleMd}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="3" width="13" height="10" rx="1.5"></rect><path d="M4 10.5v-5l2 2.5 2-2.5v5M11.5 5.5v5M10 9l1.5 1.5L13 9"></path></svg>Markdown</button>
+</header>
+
+<div style="flex: 1; min-height: 0; display: flex; flex-wrap: wrap; overflow: auto">
+
+  <sc-if value="{{showDrawer}}" hint-placeholder-val="{{ true }}">
+  <aside aria-label="Roster" style="flex: 1 1 264px; min-width: 0; max-height: 100%; display: flex; flex-direction: column; background: #12151b; border-right: 1px solid #232833; overflow: hidden">
+    <div style="padding: 16px 16px 10px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+      <h2 style="margin: 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #9aa3b2; font-weight: 600">Roster</h2>
+      <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2">{{peopleCount}} people</span>
+    </div>
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 0 12px 12px; display: flex; flex-direction: column; gap: 6px">
+      <span class="sb-lbl" style="padding: 4px 2px">Not scheduled · {{dateShort}}</span>
+      <sc-for list="{{unscheduled}}" as="p" hint-placeholder-count="2">
+        <button class="sb-chip" draggable="true" onDragStart="{{p.dragStart}}" onClick="{{p.select}}" aria-label="{{p.aria}}" style="width: 100%; min-height: 48px; border-color: {{p.border}}; opacity: {{p.fade}}; transition: opacity 200ms">
+          <span style="width: 10px; height: 10px; border-radius: 50%; flex: none; background: {{p.dot}}"></span>
+          <span style="display: flex; flex-direction: column; min-width: 0; flex: 1">
+            <span style="font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
+            <span style="font-size: 11px; color: {{p.subColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.sub}}</span>
+          </span>
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; flex: none">{{p.slug}}</span>
+        </button>
+      </sc-for>
+      <sc-if value="{{noUnscheduled}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; padding: 6px 4px; font-size: 12px; color: #9aa3b2">Everyone has a shift on this day.</p></sc-if>
+      <span class="sb-lbl" style="padding: 12px 2px 4px">On the schedule</span>
+      <sc-for list="{{scheduled}}" as="p" hint-placeholder-count="6">
+        <button class="sb-chip" draggable="true" onDragStart="{{p.dragStart}}" onClick="{{p.select}}" aria-label="{{p.aria}}" style="width: 100%; min-height: 48px; border-color: {{p.border}}; opacity: {{p.fade}}; transition: opacity 200ms">
+          <span style="width: 10px; height: 10px; border-radius: 50%; flex: none; background: {{p.dot}}"></span>
+          <span style="display: flex; flex-direction: column; min-width: 0; flex: 1">
+            <span style="font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
+            <span style="font-size: 11px; color: {{p.subColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.sub}}</span>
+          </span>
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; flex: none">{{p.slug}}</span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="border-top: 1px solid #232833; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+      <div class="sb-field">
+        <label for="sb-new-person">Add person</label>
+        <div style="display: flex; gap: 6px">
+          <input id="sb-new-person" class="sb-input" placeholder="slug: Full name" value="{{newPerson}}" onChange="{{onNewPerson}}" onKeyDown="{{newPersonKey}}" style="flex: 1">
+          <button class="sb-btn" type="button" onClick="{{addPerson}}">Add</button>
+        </div>
+      </div>
+      <div class="sb-field">
+        <label for="sb-new-team">Add team</label>
+        <div style="display: flex; gap: 6px">
+          <input id="sb-new-team" class="sb-input" placeholder="Team name" value="{{newTeam}}" onChange="{{onNewTeam}}" onKeyDown="{{newTeamKey}}" style="flex: 1">
+          <button class="sb-btn" type="button" onClick="{{addTeam}}">Add</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+  </sc-if>
+
+  <sc-if value="{{showNoDate}}" hint-placeholder-val="{{ false }}">
+  <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 48px 16px">
+    <p style="margin: 0; font-size: 15px; color: #c3c9d4">No days in this schedule yet.</p>
+    <button class="sb-btn" onClick="{{addDay}}">Add a day</button>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{showSwim}}" hint-placeholder-val="{{ true }}">
+  <main aria-label="Swimlanes" style="flex: 999 1 560px; min-width: 0; max-height: 100%; overflow: auto; position: relative; background: #0e1014">
+    <div style="position: relative; width: {{swimW}}px; min-height: 100%">
+      <div style="position: sticky; top: 0; z-index: 6; display: flex; height: 40px; background: #0e1014; border-bottom: 1px solid #232833">
+        <div style="position: sticky; left: 0; z-index: 7; width: 232px; flex: none; display: flex; align-items: center; padding: 0 16px; background: #0e1014; border-right: 1px solid #232833; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #9aa3b2; font-weight: 600">Teams · {{dateShort}}</div>
+        <div onClick="{{onAxisClick}}" title="Click to move the time cursor" style="position: relative; width: {{laneW}}px; flex: none; cursor: pointer">
+          <sc-for list="{{ticks}}" as="tk" hint-placeholder-count="16">
+            <div style="position: absolute; left: {{tk.left}}px; top: 0; bottom: 0; border-left: 1px solid #232833; padding: 13px 0 0 6px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; pointer-events: none">{{tk.label}}</div>
+          </sc-for>
+          <div style="position: absolute; left: {{cursorX}}px; top: 8px; transform: translateX(-50%); padding: 3px 7px; border-radius: 6px; background: #f2b33d; color: #0e1014; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; pointer-events: none">{{timeLabel}}</div>
+        </div>
+      </div>
+
+      <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+        <section onDragOver="{{g.dragOver}}" onDragLeave="{{g.dragLeave}}" onDrop="{{g.drop}}" style="border-bottom: 1px solid #232833; background: {{g.dropBg}}">
+          <div style="display: flex; height: 44px">
+            <div style="position: sticky; left: 0; z-index: 3; width: 232px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 4px; background: #12151b; border-right: 1px solid #232833">
+              <button class="sb-btn sb-icon" aria-expanded="{{g.expandedStr}}" aria-label="{{g.toggleLabel}}" onClick="{{g.toggle}}" style="height: 36px; width: 36px; border-color: transparent; background: transparent">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 200ms; transform: rotate({{g.chevron}}deg)"><path d="m3 5 4 4 4-4"></path></svg>
+              </button>
+              <span style="width: 12px; height: 12px; border-radius: 3px; flex: none; background: {{g.color}}"></span>
+              <span style="font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{g.name}}</span>
+              <span style="margin-left: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; white-space: nowrap">{{g.stat}}</span>
+            </div>
+            <div style="position: relative; width: {{laneW}}px; flex: none; background: #12151b">
+              <sc-if value="{{g.collapsed}}" hint-placeholder-val="{{ false }}">
+                <sc-for list="{{g.mini}}" as="mb" hint-placeholder-count="3">
+                  <div style="position: absolute; left: {{mb.left}}px; width: {{mb.width}}px; top: {{mb.top}}px; height: 6px; border-radius: 3px; background: {{mb.bg}}; opacity: {{mb.fade}}"></div>
+                </sc-for>
+              </sc-if>
+            </div>
+          </div>
+          <sc-if value="{{g.expanded}}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{g.rows}}" as="r" hint-placeholder-count="3">
+              <div style="display: flex; height: 44px; border-top: 1px solid #191d25; opacity: {{r.fade}}; transition: opacity 200ms">
+                <div style="position: sticky; left: 0; z-index: 3; width: 232px; flex: none; display: flex; align-items: center; padding: 0 8px 0 18px; background: {{r.labelBg}}; border-right: 1px solid #232833; box-shadow: {{r.matchRing}}">
+                  <button onClick="{{r.select}}" style="display: flex; align-items: center; gap: 10px; width: 100%; height: 40px; padding: 0 8px; border: 0; border-radius: 7px; background: transparent; text-align: left; cursor: pointer; min-width: 0">
+                    <span style="width: 9px; height: 9px; border-radius: 50%; flex: none; background: {{r.dot}}"></span>
+                    <span style="display: flex; flex-direction: column; min-width: 0">
+                      <span style="font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</span>
+                      <span style="font-size: 11px; color: #9aa3b2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.role}}</span>
+                    </span>
+                  </button>
+                </div>
+                <div style="position: relative; width: {{laneW}}px; flex: none; background-image: linear-gradient(90deg, #1a1e27 1px, transparent 1px); background-size: {{hourPx}}px 100%; background-position: {{gridOffset}}px 0">
+                  <sc-for list="{{r.blocks}}" as="bk" hint-placeholder-count="1">
+                    <div class="sb-hatch" title="Unavailable" style="position: absolute; top: 0; bottom: 0; left: {{bk.left}}px; width: {{bk.width}}px"></div>
+                  </sc-for>
+                  <sc-for list="{{r.bars}}" as="b" hint-placeholder-count="1">
+                    <div class="sb-bar" title="{{b.title}}" onPointerDown="{{b.downMove}}" onPointerMove="{{onBarMove}}" onPointerUp="{{onBarUp}}" onPointerCancel="{{onBarCancel}}" style="position: absolute; top: 6px; height: 32px; left: {{b.left}}px; width: {{b.width}}px; background: {{b.bg}}; border-radius: 7px; color: #0e1014; display: flex; align-items: center; gap: 6px; padding: 0 4px 0 11px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; cursor: grab; touch-action: none; user-select: none; box-shadow: {{b.ring}}; z-index: {{b.z}}">
+                      <span class="sb-handle" aria-hidden="true" onPointerDown="{{b.downStart}}" style="left: 0"></span>
+                      <sc-if value="{{b.warn}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Overlaps unavailable time" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="#0e1014" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: none"><path d="M7 1.5 13 12.5H1z"></path><path d="M7 5.5v3M7 10.5v.01"></path></svg></sc-if>
+                      <span style="flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{b.label}}</span>
+                      <button class="sb-x" aria-label="{{b.removeLabel}}" onPointerDown="{{stop}}" onClick="{{b.remove}}" style="flex: none; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 5px; background: rgba(14,16,20,.18); color: #0e1014; cursor: pointer; padding: 0"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
+                      <span class="sb-handle" aria-hidden="true" onPointerDown="{{b.downEnd}}" style="right: 0"></span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{g.empty}}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; height: 44px; border-top: 1px solid #191d25">
+                <div style="position: sticky; left: 0; width: 232px; flex: none; background: #12151b; border-right: 1px solid #232833"></div>
+                <div style="display: flex; align-items: center; padding: 0 16px; font-size: 12px; color: #9aa3b2">Drag people here from the roster</div>
+              </div>
+            </sc-if>
+          </sc-if>
+        </section>
+      </sc-for>
+
+      <div aria-hidden="true" style="position: absolute; top: 40px; bottom: 0; left: {{cursorLeft}}px; width: 2px; margin-left: -1px; background: #f2b33d; opacity: .85; z-index: 2; pointer-events: none"></div>
+    </div>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{showLayout}}" hint-placeholder-val="{{ false }}">
+  <main aria-label="Layout" style="flex: 999 1 560px; min-width: 0; max-height: 100%; display: flex; flex-direction: column; background: #0b0d11">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 8px 12px; border-bottom: 1px solid #232833; background: #12151b">
+      <span class="sb-lbl">Background</span>
+      <button class="sb-btn" aria-pressed="{{bgSamplePressed}}" onClick="{{setBgSample}}" style="height: 36px">Sample floor plan</button>
+      <label class="sb-btn" style="height: 36px">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.5V2M4 5l3-3 3 3M2 10v2h10v-2"></path></svg>
+        Upload image
+        <input type="file" accept="image/*" onChange="{{onBgFile}}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none">
+      </label>
+      <button class="sb-btn" aria-pressed="{{bgNonePressed}}" onClick="{{setBgNone}}" style="height: 36px">None</button>
+      <sc-if value="{{hasBg}}" hint-placeholder-val="{{ true }}">
+        <label for="sb-bg-op" class="sb-lbl" style="margin-left: 6px">Opacity</label>
+        <input id="sb-bg-op" class="sb-range" type="range" min="0.05" max="1" step="0.05" value="{{bgOpacity}}" onChange="{{onBgOpacity}}" style="width: 120px">
+        <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; min-width: 34px">{{bgOpacityLabel}}</span>
+        <label for="sb-bg-sc" class="sb-lbl" style="margin-left: 6px">Scale</label>
+        <input id="sb-bg-sc" class="sb-range" type="range" min="0.25" max="3" step="0.05" value="{{bgScale}}" onChange="{{onBgScale}}" style="width: 120px">
+        <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #9aa3b2; min-width: 40px">{{bgScaleLabel}}</span>
+        <sc-if value="{{bgScaled}}" hint-placeholder-val="{{ false }}">
+          <button class="sb-btn" onClick="{{resetBgScale}}" style="height: 32px; padding: 0 10px; font-size: 12px">Reset</button>
+        </sc-if>
+      </sc-if>
+      <sc-if value="{{bgLocalMissing}}" hint-placeholder-val="{{ false }}">
+        <span style="font-size: 12px; color: #f2b33d">Local image isn't stored in the markdown. Upload it again to see it.</span>
+      </sc-if>
+      <span style="margin-left: auto; font-size: 12px; color: #9aa3b2">Drag team headers to place them. Drag people between teams to reassign at {{timeLabel}}.</span>
+    </div>
+    <div style="flex: 1; min-height: 0; overflow: auto">
+      <div style="position: relative; width: {{stageW}}px; height: {{stageH}}px">
+        <div aria-hidden="true" style="position: absolute; left: 256px; top: 0; width: {{mapW}}px; height: {{stageH}}px; background-color: #0b0d11; background-image: linear-gradient(#161a22 1px, transparent 1px), linear-gradient(90deg, #161a22 1px, transparent 1px); background-size: 40px 40px; overflow: hidden">
+          <div style="position: absolute; left: 0; top: 0; width: 1000px; height: 720px; transform: scale({{bgScale}}); transform-origin: 0 0; transition: transform 200ms ease">
+          <sc-if value="{{bgSample}}" hint-placeholder-val="{{ true }}">
+            <svg width="1000" height="720" viewBox="0 0 1000 720" fill="none" style="position: absolute; left: 0; top: 0; opacity: {{bgOpacity}}">
+              <g stroke="#9db4d6" stroke-width="3">
+                <rect x="16" y="16" width="968" height="688" rx="4"></rect>
+                <path d="M320 16v270M320 340v364"></path>
+                <path d="M16 440h120M190 440h130"></path>
+                <path d="M320 320h170M550 320h170"></path>
+                <path d="M720 16v330M720 400v304"></path>
+                <path d="M720 400h264M720 560h264"></path>
+              </g>
+              <g stroke="#9db4d6" stroke-width="1.5" opacity=".7">
+                <rect x="352" y="40" width="336" height="200" rx="3" stroke-dasharray="6 6"></rect>
+                <path d="M736 360h232" stroke-dasharray="4 6"></path>
+                <path d="M60 690v-40M100 690v-40M140 690v-40"></path>
+              </g>
+              <g fill="#9db4d6" font-family="JetBrains Mono, monospace" font-size="13" letter-spacing="2">
+                <text x="32" y="428">FOYER</text>
+                <text x="32" y="636">ENTRANCE</text>
+                <text x="336" y="304">STAGE</text>
+                <text x="336" y="690">MAIN HALL</text>
+                <text x="736" y="388">BAR</text>
+                <text x="736" y="548">FIRST AID</text>
+                <text x="736" y="690">STORE</text>
+              </g>
+            </svg>
+          </sc-if>
+          <sc-if value="{{showBgImg}}" hint-placeholder-val="{{ false }}">
+            <img src="{{bgImg}}" alt="" style="position: absolute; left: 0; top: 0; width: 1000px; height: 720px; object-fit: contain; object-position: left top; opacity: {{bgOpacity}}">
+          </sc-if>
+          </div>
+        </div>
+
+        <div onDragOver="{{dockDragOver}}" onDragLeave="{{dockDragLeave}}" onDrop="{{dockDrop}}" style="position: absolute; left: 0; top: 0; width: 256px; height: {{stageH}}px; background: {{dockBg}}; border-right: 1px solid #232833">
+          <div style="height: 64px; padding: 14px 14px 0; display: flex; flex-direction: column; gap: 2px">
+            <h2 style="margin: 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #9aa3b2; font-weight: 600">Roster · off shift</h2>
+            <span style="font-size: 12px; color: #c3c9d4">{{dockCount}} at {{timeLabel}}</span>
+          </div>
+        </div>
+
+        <sc-for list="{{cards}}" as="k" hint-placeholder-count="5">
+          <div class="sb-anim" onDragOver="{{k.dragOver}}" onDragLeave="{{k.dragLeave}}" onDrop="{{k.drop}}" style="position: absolute; left: {{k.left}}px; top: {{k.top}}px; width: 240px; height: {{k.height}}px; transition: {{k.transition}}; background: rgba(18,21,27,.94); border: 1px solid {{k.border}}; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.45); overflow: hidden; z-index: {{k.z}}">
+            <div onPointerDown="{{k.down}}" onPointerMove="{{onTeamMove}}" onPointerUp="{{onTeamUp}}" onPointerCancel="{{onTeamUp}}" style="height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 4px 0 8px; background: {{k.tint}}; cursor: {{k.cursor}}; touch-action: none; user-select: none">
+              <svg aria-hidden="true" width="10" height="16" viewBox="0 0 10 16" fill="#9aa3b2"><circle cx="3" cy="3" r="1.3"></circle><circle cx="7" cy="3" r="1.3"></circle><circle cx="3" cy="8" r="1.3"></circle><circle cx="7" cy="8" r="1.3"></circle><circle cx="3" cy="13" r="1.3"></circle><circle cx="7" cy="13" r="1.3"></circle></svg>
+              <span style="width: 12px; height: 12px; border-radius: 3px; flex: none; background: {{k.color}}"></span>
+              <span style="font-size: 14px; font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{k.name}}</span>
+              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600; padding: 2px 7px; border-radius: 10px; background: #0e1014; color: #e7eaf0">{{k.count}}</span>
+              <button class="sb-btn sb-icon" aria-expanded="{{k.expandedStr}}" aria-label="{{k.toggleLabel}}" onPointerDown="{{stop}}" onClick="{{k.toggle}}" style="height: 36px; width: 36px; border-color: transparent; background: transparent">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 200ms; transform: rotate({{k.chevron}}deg)"><path d="m3 5 4 4 4-4"></path></svg>
+              </button>
+            </div>
+            <sc-if value="{{k.showEmpty}}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 18px 12px; font-size: 12px; color: #9aa3b2">No one on shift</div>
+            </sc-if>
+          </div>
+        </sc-for>
+
+        <sc-for list="{{chips}}" as="c" hint-placeholder-count="10">
+          <button class="sb-chip sb-anim" draggable="true" tabIndex="{{c.tabIndex}}" onDragStart="{{c.dragStart}}" onClick="{{c.select}}" aria-label="{{c.aria}}" style="position: absolute; left: 0; top: 0; height: 34px; z-index: 20; border-color: {{c.border}}; {{c.style}}">
+            <span style="width: 10px; height: 10px; border-radius: 50%; flex: none; background: {{c.dot}}"></span>
+            <span style="display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.2">
+              <span style="font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{c.name}}</span>
+              <span style="font-size: 11px; color: {{c.subColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{c.sub}}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{panelOpen}}" hint-placeholder-val="{{ false }}">
+  <aside aria-label="Details" style="flex: 1 1 380px; min-width: 0; max-height: 100%; display: flex; flex-direction: column; background: #12151b; border-left: 1px solid #232833; overflow: hidden">
+    <div style="display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid #232833">
+      <button class="sb-btn" aria-pressed="{{personTabPressed}}" onClick="{{tabPerson}}" style="height: 34px">Person</button>
+      <button class="sb-btn" aria-pressed="{{mdPressed}}" onClick="{{tabMd}}" style="height: 34px">Markdown</button>
+      <button class="sb-btn sb-icon" aria-label="Close panel" onClick="{{closePanel}}" style="margin-left: auto; border-color: transparent; background: transparent"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 8 8M10 2 2 10"></path></svg></button>
+    </div>
+
+    <sc-if value="{{panelMd}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; padding: 12px">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+          <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #c3c9d4">schedule.md</span>
+          <span style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: {{mdStatusBg}}; color: #0e1014">{{mdStatus}}</span>
+          <label class="sb-btn" style="height: 34px; margin-left: auto">
+            Open .md
+            <input type="file" accept=".md,text/markdown,text/plain" onChange="{{onMdFile}}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none">
+          </label>
+          <button class="sb-btn" onClick="{{copyMd}}" style="height: 34px">Copy</button>
+        </div>
+        <sc-if value="{{hasParseError}}" hint-placeholder-val="{{ false }}">
+          <div role="alert" style="padding: 8px 10px; border-radius: 8px; border: 1px solid #e06c75; background: rgba(224,108,117,.12); color: #f6c2c6; font-size: 12px; line-height: 1.45">{{parseError}}. The views show the last valid version, and UI edits are paused until this is fixed.</div>
+        </sc-if>
+        <textarea aria-label="Schedule markdown" spellcheck="false" value="{{md}}" onChange="{{onMd}}" style="flex: 1; min-height: 320px; resize: none; background: #0b0d11; border: 1px solid #2a303b; border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.6; color: #d6dbe4; white-space: pre; overflow: auto; tab-size: 2"></textarea>
+        <details style="font-size: 12px; color: #c3c9d4">
+          <summary style="cursor: pointer; padding: 4px 0">Format reference</summary>
+          <pre style="margin: 8px 0 0; padding: 10px; border-radius: 8px; background: #0b0d11; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; line-height: 1.6; color: #c3c9d4; white-space: pre; overflow: auto"># Title
+hours: 08:00-24:00
+background: sample:floorplan | local | https://…
+background-opacity: 0.5
+background-scale: 1          (0.25-3, from the top-left)
+
+## People
+- slug: Full Name      e.g. "1: Dave" or "dave: David Smith"
+  - role: Bartender
+  - color: #5b8def
+  - available: 2026-10-25 12:00-22:00
+  - unavailable: 2026-10-25 14:00-15:00
+
+## Teams
+- Team Name @ x,y #hexcolor   (x,y = place in Layout)
+
+## 2026-10-25
+### Team Name
+- slug 12:00-18:00     also 12-6pm, 9am to 1pm, a,b ranges</pre>
+        </details>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{panelPerson}}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{noInsp}}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 0; padding: 20px 16px; font-size: 13px; color: #9aa3b2">Select someone in the roster, a swimlane or the layout to annotate them.</p>
+      </sc-if>
+      <sc-if value="{{hasInsp}}" hint-placeholder-val="{{ true }}">
+        <div style="flex: 1; min-height: 0; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 20px">
+          <div style="display: flex; align-items: center; gap: 12px">
+            <span style="width: 40px; height: 40px; border-radius: 50%; flex: none; background: {{insp.dot}}"></span>
+            <div style="display: flex; flex-direction: column; min-width: 0">
+              <span style="font-size: 18px; font-weight: 600">{{insp.name}}</span>
+              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #9aa3b2">id {{insp.slug}}</span>
+            </div>
+          </div>
+          <div class="sb-field">
+            <label for="sb-p-name">Name</label>
+            <input id="sb-p-name" class="sb-input" value="{{insp.name}}" onChange="{{insp.onName}}">
+          </div>
+          <div class="sb-field">
+            <label for="sb-p-role">Role</label>
+            <input id="sb-p-role" class="sb-input" placeholder="e.g. Bartender" value="{{insp.role}}" onChange="{{insp.onRole}}">
+          </div>
+          <div class="sb-field">
+            <span class="sb-lbl">Color</span>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+              <sc-for list="{{insp.swatches}}" as="sw" hint-placeholder-count="8">
+                <button aria-label="{{sw.label}}" aria-pressed="{{sw.pressed}}" onClick="{{sw.pick}}" style="width: 32px; height: 32px; border-radius: 50%; border: 0; padding: 0; cursor: pointer; background: {{sw.c}}; box-shadow: {{sw.ring}}"></button>
+              </sc-for>
+              <label class="sb-btn" style="height: 34px; position: relative">
+                Custom
+                <input type="color" value="{{insp.colorVal}}" onChange="{{insp.onColor}}" style="width: 22px; height: 22px; border: 0; padding: 0; background: transparent; cursor: pointer">
+              </label>
+              <button class="sb-btn" aria-pressed="{{insp.noColorPressed}}" onClick="{{insp.clearColor}}" style="height: 34px">None</button>
+            </div>
+          </div>
+          <div class="sb-field">
+            <span class="sb-lbl">Shifts · {{dateShort}}</span>
+            <sc-for list="{{insp.shifts}}" as="sh" hint-placeholder-count="1">
+              <div style="display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 10px; border: 1px solid #2a303b; border-radius: 8px; background: #171b22">
+                <span style="width: 10px; height: 10px; border-radius: 3px; flex: none; background: {{sh.color}}"></span>
+                <span style="font-size: 13px; flex: 1">{{sh.team}}</span>
+                <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #c3c9d4">{{sh.range}}</span>
+                <button class="sb-btn sb-icon" aria-label="{{sh.removeLabel}}" onClick="{{sh.remove}}" style="height: 32px; width: 32px; border-color: transparent; background: transparent"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
+              </div>
+            </sc-for>
+            <sc-if value="{{insp.noShifts}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; font-size: 12px; color: #9aa3b2">No shifts. Drag them from the roster onto a team.</p>
+            </sc-if>
+          </div>
+          <div class="sb-field">
+            <span class="sb-lbl">Availability · {{dateShort}}</span>
+            <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #9aa3b2">Any "available" window limits them to those hours. "Unavailable" blocks time. Shifts that overlap blocked time get a warning.</p>
+            <sc-for list="{{insp.avail}}" as="a" hint-placeholder-count="1">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+                <select class="sb-sel" aria-label="Availability type" value="{{a.kindVal}}" onChange="{{a.onKind}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif">
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
+                </select>
+                <select class="sb-sel" aria-label="From" value="{{a.startVal}}" onChange="{{a.onStart}}">
+                  <sc-for list="{{timeOptions}}" as="o" hint-placeholder-count="4"><option value="{{o.value}}">{{o.label}}</option></sc-for>
+                </select>
+                <span style="color: #9aa3b2">to</span>
+                <select class="sb-sel" aria-label="To" value="{{a.endVal}}" onChange="{{a.onEnd}}">
+                  <sc-for list="{{timeOptions}}" as="o" hint-placeholder-count="4"><option value="{{o.value}}">{{o.label}}</option></sc-for>
+                </select>
+                <button class="sb-btn sb-icon" aria-label="Remove this window" onClick="{{a.remove}}" style="height: 36px; width: 36px; border-color: transparent; background: transparent"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
+              </div>
+            </sc-for>
+            <div><button class="sb-btn" onClick="{{insp.addAvail}}" style="height: 36px"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2v10M2 7h10"></path></svg>Add window</button></div>
+          </div>
+        </div>
+      </sc-if>
+    </sc-if>
+  </aside>
+  </sc-if>
+</div>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+  <div role="alert" style="position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 100; max-width: min(560px, calc(100% - 32px)); display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 14px; border-radius: 10px; background: {{toastBg}}; border: 1px solid {{toastBorder}}; color: {{toastColor}}; font-size: 13px; box-shadow: 0 12px 32px rgba(0,0,0,.5)">
+    <span style="flex: 1">{{toast}}</span>
+    <button class="sb-btn sb-icon" aria-label="Dismiss" onClick="{{dismissToast}}" style="height: 32px; width: 32px; border-color: transparent; background: transparent"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m2 2 6 6M8 2 2 8"></path></svg></button>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"shiftHours":{"editor":"int","default":4,"min":1,"max":12,"section":"Scheduling"},"hourWidth":{"editor":"range","default":88,"min":56,"max":160,"step":4,"unit":"px","section":"Swimlanes"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const md = Component.seed();
+    const model = Component.parse(md);
+    this.state = {
+      md: md, model: model, parseError: null,
+      view: 'swim', date: model.dates[0], t: 14 * 60,
+      collapsed: {}, selected: null, panel: 'none',
+      playing: false, toast: null, query: '',
+      copyOpen: false, copyMode: 'replace',
+      dragOverTeam: null, dragOverDock: false,
+      barDrag: null, teamDrag: null, localBg: null,
+      newPerson: '', newTeam: ''
+    };
+    this.timer = null;
+    this.toastTimer = null;
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    clearTimeout(this.toastTimer);
+    if (this.state.localBg !== null) URL.revokeObjectURL(this.state.localBg);
+  }
+
+  // ---------- Seed document ----------
+  static seed() {
+    return [
+      '# Riverside Hall · Event Staffing',
+      'hours: 08:00-24:00',
+      'background: sample:floorplan',
+      'background-opacity: 0.55',
+      'background-scale: 1',
+      '',
+      '## People',
+      '- dave: David Smith',
+      '  - role: Duty manager',
+      '  - color: #5b8def',
+      '  - unavailable: 2026-10-25 14:00-15:00',
+      '- 1: Priya Natarajan',
+      '  - role: Paramedic',
+      '  - color: #e06c75',
+      '- 2: Tom Okafor',
+      '  - role: Security',
+      '  - unavailable: 2026-10-25 15:00-16:00',
+      '- mia: Mia Laurent',
+      '  - role: Bartender',
+      '  - color: #c678dd',
+      '- jo: Joanna Byrne',
+      '  - role: Ticketing',
+      '  - color: #f08c3a',
+      '- sam: Sam Whitfield',
+      '  - role: Security',
+      '- 3: Lena Hoffmann',
+      '  - role: Floor host',
+      '  - color: #3fb68b',
+      '- kofi: Kofi Mensah',
+      '  - role: Bar lead',
+      '- ana: Ana Ruiz',
+      '  - role: Bartender',
+      '  - color: #e5c07b',
+      '- ben: Ben Carter',
+      '  - role: Rigger',
+      '- eli: Eli Novak',
+      '  - role: Sound tech',
+      '  - color: #56b6c2',
+      '  - available: 2026-10-25 12:00-22:00',
+      '- 4: Yuki Tanaka',
+      '  - role: Lighting',
+      '  - unavailable: 2026-10-25 08:00-12:00',
+      '- rosa: Rosa Delgado',
+      '  - role: First aider',
+      '  - available: 2026-10-25 17:00-24:00',
+      '- lily: Lily Chen',
+      '  - role: Runner',
+      '  - color: #a3be5a',
+      '- omar: Omar Haddad',
+      '  - role: Runner',
+      '  - unavailable: 2026-10-25 08:00-24:00',
+      '',
+      '## Teams',
+      '- Front Gate @ 24,500 #f08c3a',
+      '- Stage Crew @ 352,32 #5b8def',
+      '- Main Bar @ 736,32 #c678dd',
+      '- Floor @ 352,360 #3fb68b',
+      '- First Aid @ 736,420 #e06c75',
+      '',
+      '## 2026-10-25',
+      '### Front Gate',
+      '- dave 08:00-14:00',
+      '- 2 10:00-16:00',
+      '- jo 14:00-20:00',
+      '- sam 16:00-24:00',
+      '### Stage Crew',
+      '- ben 08:00-13:00',
+      '- eli 13:00-20:00',
+      '- 4 15:00-23:00',
+      '- dave 15:00-21:00',
+      '### Main Bar',
+      '- 3 12:00-16:00',
+      '- mia 12:00-18:00',
+      '- kofi 16:00-24:00',
+      '- ana 18:00-24:00',
+      '### Floor',
+      '- 3 17:00-22:00',
+      '- mia 19:00-23:00',
+      '### First Aid',
+      '- 1 12-6pm',
+      '- rosa 18:00-24:00',
+      '',
+      '## 2026-10-26',
+      '### Front Gate',
+      '- sam 10:00-18:00',
+      '- lily 12:00-20:00',
+      '### Main Bar',
+      '- kofi 14:00-22:00',
+      '### First Aid',
+      '- 1 12:00-18:00',
+      ''
+    ].join('\n');
+  }
+
+  static palette() {
+    return ['#5b8def', '#f08c3a', '#3fb68b', '#c678dd', '#e5c07b', '#e06c75', '#56b6c2', '#a3be5a'];
+  }
+
+  // ---------- Time helpers (pure) ----------
+  static pad(n) { return String(n).padStart(2, '0'); }
+  static fmt(min) { return Component.pad(Math.floor(min / 60)) + ':' + Component.pad(min % 60); }
+  static fmtRange(r) { return Component.fmt(r.start) + '-' + Component.fmt(r.end); }
+  static fmtDur(min) { const h = min / 60; return (Number.isInteger(h) ? String(h) : h.toFixed(1)) + 'h'; }
+  static snap(min) { return Math.round(min / 15) * 15; }
+  static clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
+
+  static parseTimeParts(s, where) {
+    const m = /^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/i.exec(s.trim());
+    if (!m) throw new Error(where + 'invalid time "' + s.trim() + '". Use 13:30, 9am or 1:30pm');
+    return { h: Number(m[1]), min: m[2] === undefined ? 0 : Number(m[2]), mer: m[3] === undefined ? null : m[3].toLowerCase(), where: where, raw: s.trim() };
+  }
+  static applyMer(p, mer) {
+    if (p.h < 1 || p.h > 12) throw new Error(p.where + '"' + p.raw + '": hours must be 1-12 with am/pm');
+    if (p.min > 59) throw new Error(p.where + '"' + p.raw + '": minutes must be 00-59');
+    return ((p.h % 12) + (mer === 'pm' ? 12 : 0)) * 60 + p.min;
+  }
+  static toMin(p) {
+    if (p.mer !== null) return Component.applyMer(p, p.mer);
+    if (p.min > 59 || p.h > 24 || (p.h === 24 && p.min > 0)) throw new Error(p.where + '"' + p.raw + '" is not a valid 24-hour time');
+    return p.h * 60 + p.min;
+  }
+  static parseRange(v, where) {
+    const m = /^(.+?)\s*(?:-|–|\bto\b)\s*(.+)$/i.exec(v.trim());
+    if (!m) throw new Error(where + 'expected a time range like 12:00-18:00 or 12-6pm, got "' + v.trim() + '"');
+    const a = Component.parseTimeParts(m[1], where);
+    const b = Component.parseTimeParts(m[2], where);
+    const end = Component.toMin(b);
+    let start;
+    if (a.mer === null && b.mer !== null) {
+      const same = Component.applyMer(a, b.mer);
+      start = same < end ? same : Component.applyMer(a, 'am');
+    } else {
+      start = Component.toMin(a);
+    }
+    if (!(start < end)) throw new Error(where + 'range "' + v.trim() + '" must end after it starts (overnight ranges are not supported; end at 24:00)');
+    return { start: start, end: end };
+  }
+  static isDate(d) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return false;
+    const parts = d.split('-').map(Number);
+    const dt = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+    return dt.toISOString().slice(0, 10) === d;
+  }
+  static nextDate(d) {
+    const p = d.split('-').map(Number);
+    return new Date(Date.UTC(p[0], p[1] - 1, p[2] + 1)).toISOString().slice(0, 10);
+  }
+  static dateLabel(d, withYear) {
+    const p = d.split('-').map(Number);
+    const dt = new Date(Date.UTC(p[0], p[1] - 1, p[2]));
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return days[dt.getUTCDay()] + ' ' + p[2] + ' ' + months[p[1] - 1] + (withYear ? ' ' + p[0] : '');
+  }
+
+  // ---------- Markdown <-> model (pure) ----------
+  static parse(text) {
+    const SLUG = '[A-Za-z0-9][A-Za-z0-9_-]*';
+    const lines = text.split(/\r?\n/);
+    let title = null, hours = null, bgSrc = null, bgOpacity = null, bgScale = null;
+    const people = [], teams = [], dates = [], shifts = [];
+    let section = 'header', curTeam = null, curPerson = null, curDate = null;
+    lines.forEach(function (raw, i) {
+      const line = raw.replace(/\s+$/, '');
+      const at = 'Line ' + (i + 1) + ': ';
+      const fail = function (msg) { throw new Error(at + msg); };
+      if (line.trim() === '') return;
+      let m = /^# (.+)$/.exec(line);
+      if (m) {
+        if (title !== null) fail('only one "# Title" heading is allowed');
+        if (section !== 'header') fail('"# Title" must come first');
+        title = m[1].trim();
+        return;
+      }
+      m = /^## (.+)$/.exec(line);
+      if (m) {
+        const h = m[1].trim();
+        curTeam = null; curPerson = null; curDate = null;
+        if (h === 'People') { section = 'people'; return; }
+        if (h === 'Teams') { section = 'teams'; return; }
+        if (/^\d{4}-\d{2}-\d{2}$/.test(h)) {
+          if (!Component.isDate(h)) fail('"' + h + '" is not a real date');
+          if (dates.indexOf(h) !== -1) fail('date "' + h + '" appears twice');
+          dates.push(h); curDate = h; section = 'date';
+          return;
+        }
+        fail('unknown section "## ' + h + '". Expected "## People", "## Teams" or "## YYYY-MM-DD"');
+      }
+      m = /^### (.+)$/.exec(line);
+      if (m) {
+        if (section !== 'date') fail('"### Team" headings belong under a "## YYYY-MM-DD" section');
+        const name = m[1].trim();
+        if (!teams.some(function (t) { return t.name === name; })) fail('team "' + name + '" is not listed under "## Teams" (which must come before the dates)');
+        curTeam = name;
+        return;
+      }
+      if (section === 'header') {
+        if (title === null) fail('the document must start with "# Title"');
+        m = /^([a-z-]+):\s*(.+)$/.exec(line);
+        if (!m) fail('expected "key: value" (hours, background, background-opacity), got "' + line.trim() + '"');
+        if (m[1] === 'hours') { hours = Component.parseRange(m[2], at); return; }
+        if (m[1] === 'background') { bgSrc = m[2].trim(); return; }
+        if (m[1] === 'background-opacity') {
+          const n = Number(m[2]);
+          if (!(n >= 0 && n <= 1)) fail('background-opacity must be a number from 0 to 1');
+          bgOpacity = n;
+          return;
+        }
+        if (m[1] === 'background-scale') {
+          const n = Number(m[2]);
+          if (!(n >= 0.25 && n <= 3)) fail('background-scale must be a number from 0.25 to 3');
+          bgScale = n;
+          return;
+        }
+        fail('unknown setting "' + m[1] + '" (expected hours, background, background-opacity or background-scale)');
+      }
+      if (section === 'people') {
+        m = new RegExp('^- (' + SLUG + '):\\s+(.+)$').exec(line);
+        if (m) {
+          if (people.some(function (p) { return p.slug === m[1]; })) fail('person id "' + m[1] + '" is used twice');
+          curPerson = { slug: m[1], name: m[2].trim(), role: null, color: null, avail: [] };
+          people.push(curPerson);
+          return;
+        }
+        m = /^\s{2,}- ([a-z]+):\s*(.+)$/.exec(line);
+        if (m) {
+          if (curPerson === null) fail('attribute "' + m[1] + '" must be indented under a "- slug: Name" line');
+          const v = m[2].trim();
+          if (m[1] === 'role') { curPerson.role = v; return; }
+          if (m[1] === 'color') {
+            if (!/^#[0-9a-fA-F]{6}$/.test(v)) fail('color must be a 6-digit hex like #5b8def');
+            curPerson.color = v.toLowerCase();
+            return;
+          }
+          if (m[1] === 'available' || m[1] === 'unavailable') {
+            const dm = /^(\d{4}-\d{2}-\d{2})\s+(.+)$/.exec(v);
+            if (!dm) fail(m[1] + ' needs a date and range, like "' + m[1] + ': 2026-10-25 12:00-18:00"');
+            if (!Component.isDate(dm[1])) fail('"' + dm[1] + '" is not a real date');
+            const r = Component.parseRange(dm[2], at);
+            curPerson.avail.push({ kind: m[1], date: dm[1], start: r.start, end: r.end });
+            return;
+          }
+          fail('unknown person attribute "' + m[1] + '". Use role, color, available or unavailable');
+        }
+        fail('expected "- slug: Full Name" or an indented "  - role|color|available|unavailable: ...", got "' + line.trim() + '"');
+      }
+      if (section === 'teams') {
+        m = /^- (.+?)\s+@\s*(-?\d+)\s*,\s*(-?\d+)\s+(#[0-9a-fA-F]{6})$/.exec(line);
+        if (!m) fail('expected "- Team Name @ x,y #hexcolor", got "' + line.trim() + '"');
+        const name = m[1].trim();
+        if (teams.some(function (t) { return t.name === name; })) fail('team "' + name + '" is listed twice');
+        teams.push({ name: name, x: Number(m[2]), y: Number(m[3]), color: m[4].toLowerCase() });
+        return;
+      }
+      if (section === 'date') {
+        if (curTeam === null) fail('add a "### Team" heading before listing people');
+        m = new RegExp('^- (' + SLUG + '):?\\s+(.+)$').exec(line);
+        if (!m) fail('expected "- slug 12:00-18:00", got "' + line.trim() + '"');
+        const slug = m[1];
+        if (!people.some(function (p) { return p.slug === slug; })) fail('"' + slug + '" is not listed under "## People" (which must come before the dates)');
+        m[2].split(',').forEach(function (part) {
+          const r = Component.parseRange(part, at);
+          shifts.push({ date: curDate, team: curTeam, slug: slug, start: r.start, end: r.end });
+        });
+        return;
+      }
+      throw new Error('bug: this should never happen (unhandled section "' + section + '")');
+    });
+    if (title === null) throw new Error('Missing "# Title" heading');
+    if (hours === null) throw new Error('Missing "hours: HH:MM-HH:MM" under the title');
+    if ((bgSrc === null) !== (bgOpacity === null) || (bgSrc === null) !== (bgScale === null)) {
+      throw new Error('"background", "background-opacity" and "background-scale" must be set together');
+    }
+    const model = {
+      title: title, hours: hours,
+      background: bgSrc === null ? null : { src: bgSrc, opacity: bgOpacity, scale: bgScale },
+      people: people, teams: teams, dates: dates.slice().sort(),
+      shifts: Component.sortShifts(shifts)
+    };
+    Component.validate(model);
+    return model;
+  }
+
+  static validate(m) {
+    const slugs = {};
+    m.people.forEach(function (p) {
+      if (slugs[p.slug]) throw new Error('Person id "' + p.slug + '" is used twice');
+      slugs[p.slug] = p;
+      if (!/^[A-Za-z0-9][A-Za-z0-9_-]*$/.test(p.slug)) throw new Error('Person id "' + p.slug + '" may only use letters, digits, - and _');
+      if (p.name.trim() === '') throw new Error('Person "' + p.slug + '" needs a name');
+      if (p.color !== null && !/^#[0-9a-f]{6}$/.test(p.color)) throw new Error(p.name + ': color must be a 6-digit hex');
+      p.avail.forEach(function (a) {
+        if (!(a.start < a.end)) throw new Error(p.name + ': availability on ' + a.date + ' must end after it starts');
+      });
+    });
+    const teamNames = {};
+    m.teams.forEach(function (t) {
+      if (teamNames[t.name]) throw new Error('Team "' + t.name + '" is listed twice');
+      if (t.name.trim() === '' || t.name.indexOf('@') !== -1) throw new Error('Team names must be non-empty and cannot contain "@"');
+      teamNames[t.name] = t;
+    });
+    const byPerson = {};
+    m.shifts.forEach(function (s) {
+      if (!slugs[s.slug]) throw new Error('Shift for unknown person "' + s.slug + '"');
+      if (!teamNames[s.team]) throw new Error('Shift for unknown team "' + s.team + '"');
+      if (m.dates.indexOf(s.date) === -1) throw new Error('bug: this should never happen (shift on unlisted date ' + s.date + ')');
+      if (!(s.start < s.end)) throw new Error(slugs[s.slug].name + "'s shift must end after it starts");
+      if (s.start < m.hours.start || s.end > m.hours.end) {
+        throw new Error(slugs[s.slug].name + ' (' + s.team + ' ' + Component.fmtRange(s) + ') falls outside hours ' + Component.fmtRange(m.hours));
+      }
+      const k = s.date + '|' + s.slug;
+      (byPerson[k] = byPerson[k] || []).push(s);
+    });
+    Object.keys(byPerson).forEach(function (k) {
+      const list = byPerson[k].slice().sort(function (a, b) { return a.start - b.start; });
+      for (let i = 1; i < list.length; i++) {
+        if (list[i].start < list[i - 1].end) {
+          const p = slugs[list[i].slug];
+          throw new Error(p.name + ' is double-booked on ' + list[i].date + ': ' + list[i - 1].team + ' ' + Component.fmtRange(list[i - 1]) + ' overlaps ' + list[i].team + ' ' + Component.fmtRange(list[i]));
+        }
+      }
+    });
+  }
+
+  static serialize(m) {
+    const out = ['# ' + m.title, 'hours: ' + Component.fmtRange(m.hours)];
+    if (m.background !== null) out.push('background: ' + m.background.src, 'background-opacity: ' + m.background.opacity, 'background-scale: ' + m.background.scale);
+    out.push('', '## People');
+    m.people.forEach(function (p) {
+      out.push('- ' + p.slug + ': ' + p.name);
+      if (p.role !== null) out.push('  - role: ' + p.role);
+      if (p.color !== null) out.push('  - color: ' + p.color);
+      p.avail.slice().sort(function (a, b) { return a.date.localeCompare(b.date) || a.start - b.start; }).forEach(function (a) {
+        out.push('  - ' + a.kind + ': ' + a.date + ' ' + Component.fmtRange(a));
+      });
+    });
+    out.push('', '## Teams');
+    m.teams.forEach(function (t) { out.push('- ' + t.name + ' @ ' + t.x + ',' + t.y + ' ' + t.color); });
+    m.dates.forEach(function (d) {
+      out.push('', '## ' + d);
+      m.teams.forEach(function (t) {
+        const ss = m.shifts.filter(function (s) { return s.date === d && s.team === t.name; });
+        if (ss.length === 0) return;
+        out.push('### ' + t.name);
+        ss.forEach(function (s) { out.push('- ' + s.slug + ' ' + Component.fmtRange(s)); });
+      });
+    });
+    return out.join('\n') + '\n';
+  }
+
+  static sortShifts(ss) {
+    return ss.slice().sort(function (a, b) {
+      return a.date.localeCompare(b.date) || a.start - b.start || a.slug.localeCompare(b.slug) || a.team.localeCompare(b.team);
+    });
+  }
+  static shiftKey(s) { return s.date + '|' + s.team + '|' + s.slug + '|' + s.start; }
+
+  // ---------- Model operations (pure; each returns a new validated model or throws) ----------
+  static withShifts(m, shifts) {
+    const next = Object.assign({}, m, { shifts: Component.sortShifts(shifts) });
+    Component.validate(next);
+    return next;
+  }
+  static personOf(m, slug) {
+    const p = m.people.find(function (x) { return x.slug === slug; });
+    if (p === undefined) throw new Error('bug: this should never happen (unknown person "' + slug + '")');
+    return p;
+  }
+  static addShift(m, s) { return Component.withShifts(m, m.shifts.concat([s])); }
+  static removeShift(m, key) {
+    const rest = m.shifts.filter(function (s) { return Component.shiftKey(s) !== key; });
+    if (rest.length !== m.shifts.length - 1) throw new Error('bug: this should never happen (shift ' + key + ' not found)');
+    return Component.withShifts(m, rest);
+  }
+  static replaceShift(m, key, next) {
+    return Component.withShifts(Component.removeShift(m, key), Component.removeShift(m, key).shifts.concat([next]));
+  }
+  // Move a person to `target` team (or off shift when target === null) at time t.
+  // A mid-shift move keeps the original end time; joining from the roster lasts `lenMin`.
+  static reassignAt(m, date, slug, t, target, lenMin) {
+    const active = m.shifts.find(function (s) { return s.date === date && s.slug === slug && s.start <= t && t < s.end; });
+    if (active !== undefined && active.team === target) return m;
+    if (active === undefined && target === null) return m;
+    let rest = m.shifts.filter(function (s) { return s !== active; });
+    if (active !== undefined && t > active.start) rest = rest.concat([Object.assign({}, active, { end: t })]);
+    if (target !== null) {
+      const end = active !== undefined ? active.end : Math.min(t + lenMin, m.hours.end);
+      if (!(t < end)) throw new Error('No time left after ' + Component.fmt(t) + ' to start a shift');
+      rest = rest.concat([{ date: date, team: target, slug: slug, start: t, end: end }]);
+    }
+    return Component.withShifts(m, rest);
+  }
+  static updatePerson(m, slug, patch) {
+    Component.personOf(m, slug);
+    if (patch.name !== undefined && patch.name.trim() === '') throw new Error("Name can't be empty");
+    const next = Object.assign({}, m, { people: m.people.map(function (p) { return p.slug === slug ? Object.assign({}, p, patch) : p; }) });
+    Component.validate(next);
+    return next;
+  }
+  static addPerson(m, text) {
+    const mm = /^\s*([A-Za-z0-9][A-Za-z0-9_-]*):\s*(.+?)\s*$/.exec(text);
+    if (!mm) throw new Error('Type a person as "slug: Full name", e.g. "5: Dave" or "dave: David Smith"');
+    if (m.people.some(function (p) { return p.slug === mm[1]; })) throw new Error('The id "' + mm[1] + '" is already taken');
+    const next = Object.assign({}, m, { people: m.people.concat([{ slug: mm[1], name: mm[2], role: null, color: null, avail: [] }]) });
+    Component.validate(next);
+    return next;
+  }
+  static addTeam(m, name) {
+    const n = name.trim();
+    if (n === '') throw new Error('Type a team name first');
+    if (m.teams.some(function (t) { return t.name === n; })) throw new Error('There is already a team called "' + n + '"');
+    const i = m.teams.length;
+    const pal = Component.palette();
+    const team = { name: n, x: 24 + (i % 4) * 256, y: 24 + Math.floor(i / 4) * 240, color: pal[i % pal.length] };
+    const next = Object.assign({}, m, { teams: m.teams.concat([team]) });
+    Component.validate(next);
+    return next;
+  }
+  static moveTeam(m, name, x, y) {
+    if (!m.teams.some(function (t) { return t.name === name; })) throw new Error('bug: this should never happen (unknown team "' + name + '")');
+    return Object.assign({}, m, { teams: m.teams.map(function (t) { return t.name === name ? Object.assign({}, t, { x: x, y: y }) : t; }) });
+  }
+  static addDate(m, d) {
+    if (!Component.isDate(d)) throw new Error('bug: this should never happen (bad date ' + d + ')');
+    if (m.dates.indexOf(d) !== -1) throw new Error(d + ' is already in the schedule');
+    return Object.assign({}, m, { dates: m.dates.concat([d]).sort() });
+  }
+  // Copy every shift on `from` onto `to`. mode 'replace' clears `to` first; 'merge' keeps it (overlaps are rejected by validate).
+  static copyDay(m, from, to, mode) {
+    if (mode !== 'replace' && mode !== 'merge') throw new Error('bug: this should never happen (copy mode ' + mode + ')');
+    if (from === to) throw new Error("Pick a different day to copy from");
+    if (m.dates.indexOf(from) === -1 || m.dates.indexOf(to) === -1) throw new Error('bug: this should never happen (copy between unlisted dates)');
+    const src = m.shifts.filter(function (s) { return s.date === from; }).map(function (s) { return Object.assign({}, s, { date: to }); });
+    if (src.length === 0) throw new Error(Component.dateLabel(from, false) + ' has no shifts to copy');
+    const base = mode === 'replace' ? m.shifts.filter(function (s) { return s.date !== to; }) : m.shifts;
+    return Component.withShifts(m, base.concat(src));
+  }
+  static setBackground(m, bg) { return Object.assign({}, m, { background: bg }); }
+  static setAvail(m, slug, idx, patch) {
+    const p = Component.personOf(m, slug);
+    if (idx < 0 || idx >= p.avail.length) throw new Error('bug: this should never happen (availability index ' + idx + ')');
+    const avail = p.avail.map(function (a, i) { return i === idx ? Object.assign({}, a, patch) : a; });
+    if (!(avail[idx].start < avail[idx].end)) throw new Error('Availability must end after it starts');
+    return Component.updatePerson(m, slug, { avail: avail });
+  }
+  static addAvail(m, slug, entry) { return Component.updatePerson(m, slug, { avail: Component.personOf(m, slug).avail.concat([entry]) }); }
+  static removeAvail(m, slug, idx) {
+    return Component.updatePerson(m, slug, { avail: Component.personOf(m, slug).avail.filter(function (a, i) { return i !== idx; }) });
+  }
+
+  // ---------- Availability (pure) ----------
+  static unavailBlocks(p, date, hours) {
+    const own = p.avail.filter(function (a) { return a.date === date; });
+    const windows = own.filter(function (a) { return a.kind === 'available'; }).sort(function (a, b) { return a.start - b.start; });
+    const blocks = [];
+    if (windows.length > 0) {
+      let cur = hours.start;
+      windows.forEach(function (a) { if (a.start > cur) blocks.push({ start: cur, end: a.start }); cur = Math.max(cur, a.end); });
+      if (cur < hours.end) blocks.push({ start: cur, end: hours.end });
+    }
+    own.filter(function (a) { return a.kind === 'unavailable'; }).forEach(function (a) { blocks.push({ start: a.start, end: a.end }); });
+    return blocks
+      .map(function (b) { return { start: Math.max(b.start, hours.start), end: Math.min(b.end, hours.end) }; })
+      .filter(function (b) { return b.start < b.end; });
+  }
+  static statusAt(p, date, t, hours) {
+    if (Component.unavailBlocks(p, date, hours).some(function (b) { return b.start <= t && t < b.end; })) return 'unavailable';
+    return p.avail.some(function (a) { return a.date === date && a.kind === 'available'; }) ? 'available' : 'open';
+  }
+
+  // ---------- Edge: state, IO, errors ----------
+  toast(msg, kind) {
+    if (kind !== 'error' && kind !== 'info') throw new Error('bug: this should never happen (toast kind ' + kind + ')');
+    clearTimeout(this.toastTimer);
+    this.setState({ toast: { msg: msg, kind: kind } });
+    this.toastTimer = setTimeout(() => this.setState({ toast: null }), 6000);
+  }
+  commit(fn) {
+    if (this.state.parseError !== null) { this.toast('Fix the markdown error before editing in the UI', 'error'); return null; }
+    let next;
+    try { next = fn(this.state.model); } catch (err) { this.toast(err.message, 'error'); return null; }
+    if (next === this.state.model) return next;
+    this.setState({ model: next, md: Component.serialize(next) });
+    return next;
+  }
+  setMd(text) {
+    let model;
+    try { model = Component.parse(text); } catch (err) { this.setState({ md: text, parseError: err.message }); return; }
+    const date = model.dates.indexOf(this.state.date) !== -1 ? this.state.date : (model.dates.length > 0 ? model.dates[0] : null);
+    const selected = this.state.selected !== null && model.people.some((p) => p.slug === this.state.selected) ? this.state.selected : null;
+    this.setState({ md: text, model: model, parseError: null, date: date, selected: selected });
+  }
+  todayISO() {
+    const d = new Date();
+    return d.getFullYear() + '-' + Component.pad(d.getMonth() + 1) + '-' + Component.pad(d.getDate());
+  }
+  requireDate() {
+    if (this.state.date === null) throw new Error('Add a day first');
+    return this.state.date;
+  }
+  readDrag(e) {
+    const v = e.dataTransfer.getData('text/plain');
+    if (v.indexOf('person:') !== 0) throw new Error('Only people from the roster can be dropped here');
+    return v.slice('person:'.length);
+  }
+  addPerson() {
+    const text = this.state.newPerson;
+    const next = this.commit((m) => Component.addPerson(m, text));
+    if (next === null) return;
+    const slug = next.people[next.people.length - 1].slug;
+    this.setState({ newPerson: '' });
+    this.toast('Added ' + text.trim() + '. Drag them onto a team to schedule.', 'info');
+    this.select(slug);
+  }
+  addTeam() {
+    const name = this.state.newTeam.trim();
+    if (this.commit((m) => Component.addTeam(m, name)) === null) return;
+    this.setState({ newTeam: '' });
+    this.toast('Added team ' + name + '. Drag its header in Layout to place it.', 'info');
+  }
+  select(slug) { this.setState({ selected: slug, panel: 'person' }); }
+  toggleTeam(name) {
+    const c = Object.assign({}, this.state.collapsed);
+    c[name] = !c[name];
+    this.setState({ collapsed: c });
+  }
+  dragStart(e, slug) {
+    e.dataTransfer.setData('text/plain', 'person:' + slug);
+    e.dataTransfer.effectAllowed = 'move';
+  }
+  dragOverTeam(e, name) {
+    e.preventDefault();
+    if (this.state.dragOverTeam !== name) this.setState({ dragOverTeam: name });
+  }
+  dragLeave(e) {
+    if (e.relatedTarget !== null && e.currentTarget.contains(e.relatedTarget)) return;
+    this.setState({ dragOverTeam: null, dragOverDock: false });
+  }
+  dropOnLane(e, team, pxm, hrs) {
+    e.preventDefault();
+    this.setState({ dragOverTeam: null });
+    const rect = e.currentTarget.getBoundingClientRect();
+    const H = this.state.model.hours;
+    this.commit((m) => {
+      const date = this.requireDate();
+      const slug = this.readDrag(e);
+      const start = Component.clamp(Component.snap(H.start + (e.clientX - rect.left - 232) / pxm), H.start, H.end - 15);
+      const end = Math.min(start + hrs * 60, H.end);
+      return Component.addShift(m, { date: date, team: team, slug: slug, start: start, end: end });
+    });
+  }
+  dropOnCard(e, team, t, lenMin) {
+    e.preventDefault();
+    this.setState({ dragOverTeam: null });
+    this.commit((m) => Component.reassignAt(m, this.requireDate(), this.readDrag(e), t, team, lenMin));
+  }
+  dropOnDock(e, t) {
+    e.preventDefault();
+    this.setState({ dragOverDock: false });
+    this.commit((m) => Component.reassignAt(m, this.requireDate(), this.readDrag(e), t, null, 0));
+  }
+  teamDown(e, team) {
+    if (e.button !== 0) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    this.setState({ teamDrag: { name: team.name, sx: e.clientX, sy: e.clientY, ox: team.x, oy: team.y, x: team.x, y: team.y } });
+  }
+  onTeamMove(e) {
+    const d = this.state.teamDrag;
+    if (d === null) return;
+    const x = Math.max(0, Math.round((d.ox + e.clientX - d.sx) / 8) * 8);
+    const y = Math.max(0, Math.round((d.oy + e.clientY - d.sy) / 8) * 8);
+    if (x === d.x && y === d.y) return;
+    this.setState({ teamDrag: Object.assign({}, d, { x: x, y: y }) });
+  }
+  onTeamUp() {
+    const d = this.state.teamDrag;
+    if (d === null) return;
+    this.setState({ teamDrag: null });
+    if (d.x === d.ox && d.y === d.oy) return;
+    this.commit((m) => Component.moveTeam(m, d.name, d.x, d.y));
+  }
+  barDown(e, s, mode, pxm) {
+    if (e.button !== 0) return;
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    this.setState({ barDrag: { key: Component.shiftKey(s), orig: s, mode: mode, sx: e.clientX, pxm: pxm, preview: s, moved: false } });
+  }
+  onBarMove(e) {
+    const d = this.state.barDrag;
+    if (d === null) return;
+    const H = this.state.model.hours;
+    const dm = Math.round((e.clientX - d.sx) / d.pxm / 15) * 15;
+    const o = d.orig;
+    let p;
+    if (d.mode === 'move') {
+      const dur = o.end - o.start;
+      const start = Component.clamp(o.start + dm, H.start, H.end - dur);
+      p = Object.assign({}, o, { start: start, end: start + dur });
+    } else if (d.mode === 'start') {
+      p = Object.assign({}, o, { start: Component.clamp(o.start + dm, H.start, o.end - 15) });
+    } else if (d.mode === 'end') {
+      p = Object.assign({}, o, { end: Component.clamp(o.end + dm, o.start + 15, H.end) });
+    } else {
+      throw new Error('bug: this should never happen (drag mode ' + d.mode + ')');
+    }
+    const moved = d.moved || dm !== 0;
+    if (p.start === d.preview.start && p.end === d.preview.end && moved === d.moved) return;
+    this.setState({ barDrag: Object.assign({}, d, { preview: p, moved: moved }) });
+  }
+  onBarUp() {
+    const d = this.state.barDrag;
+    if (d === null) return;
+    this.setState({ barDrag: null });
+    if (!d.moved) { this.select(d.orig.slug); return; }
+    if (d.preview.start === d.orig.start && d.preview.end === d.orig.end) return;
+    this.commit((m) => Component.replaceShift(m, d.key, d.preview));
+  }
+  togglePlay() {
+    if (this.state.playing) {
+      clearInterval(this.timer);
+      this.setState({ playing: false });
+      return;
+    }
+    const H = this.state.model.hours;
+    this.setState({ playing: true, t: this.state.t >= H.end ? H.start : this.state.t });
+    this.timer = setInterval(() => {
+      const end = this.state.model.hours.end;
+      const nt = this.state.t + 15;
+      if (nt >= end) { clearInterval(this.timer); this.setState({ t: end, playing: false }); return; }
+      this.setState({ t: nt });
+    }, 800);
+  }
+  onBgFile(e) {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (file === undefined) return;
+    if (this.state.localBg !== null) URL.revokeObjectURL(this.state.localBg);
+    const url = URL.createObjectURL(file);
+    const ok = this.commit((m) => Component.setBackground(m, m.background !== null
+      ? Object.assign({}, m.background, { src: 'local' })
+      : { src: 'local', opacity: 0.5, scale: 1 }));
+    if (ok === null) { URL.revokeObjectURL(url); return; }
+    this.setState({ localBg: url });
+  }
+  onMdFile(e) {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (file === undefined) return;
+    file.text().then((text) => this.setMd(text), (err) => this.toast('Could not read ' + file.name + ': ' + err.message, 'error'));
+  }
+
+  // ---------- View model ----------
+  renderVals() {
+    const C = Component;
+    const st = this.state;
+    const m = st.model;
+    const H = m.hours;
+    const shiftHours = this.props.shiftHours ?? 4;
+    const hourPx = this.props.hourWidth ?? 88;
+    const pxm = hourPx / 60;
+    const LABEL_W = 232, DOCK_W = 256, CARD_W = 240, HEAD_H = 48, ROW_H = 40, PAD = 8, DOCK_HEAD = 64;
+    const date = st.date;
+    const hasDate = date !== null;
+    const t = C.clamp(st.t, H.start, H.end);
+    const td = st.teamDrag;
+    const personBy = (slug) => C.personOf(m, slug);
+    const teamColor = {};
+    m.teams.forEach((tm) => { teamColor[tm.name] = tm.color; });
+
+    let dayShifts = hasDate ? m.shifts.filter((s) => s.date === date) : [];
+    if (st.barDrag !== null) dayShifts = dayShifts.map((s) => (C.shiftKey(s) === st.barDrag.key ? st.barDrag.preview : s));
+    const activeOf = (slug) => dayShifts.find((s) => s.slug === slug && s.start <= t && t < s.end);
+    const xOf = (min) => (min - H.start) * pxm;
+    const laneW = (H.end - H.start) * pxm;
+
+    // ---- Search filter: matches name, id, role, or a team they work on this day
+    const q = st.query.trim().toLowerCase();
+    const hasQuery = q !== '';
+    const isMatch = {};
+    m.people.forEach((p) => {
+      const hay = [p.name, p.slug, p.role ?? ''].concat(dayShifts.filter((s) => s.slug === p.slug).map((s) => s.team));
+      isMatch[p.slug] = !hasQuery || hay.some((h) => h.toLowerCase().indexOf(q) !== -1);
+    });
+    const matchCount = m.people.filter((p) => hasQuery && isMatch[p.slug]).length;
+    const fadeOf = (slug) => (isMatch[slug] ? 1 : 0.22);
+    const hitOf = (slug) => hasQuery && isMatch[slug];
+
+    // ---- Swimlanes
+    const ticks = [];
+    for (let h = Math.ceil(H.start / 60); h <= Math.floor(H.end / 60); h++) ticks.push({ left: xOf(h * 60), label: C.pad(h) + ':00' });
+
+    const groups = m.teams.map((team) => {
+      const ts = dayShifts.filter((s) => s.team === team.name);
+      const order = [];
+      ts.forEach((s) => { if (order.indexOf(s.slug) === -1) order.push(s.slug); });
+      const collapsed = st.collapsed[team.name] === true;
+      const rows = order.map((slug) => {
+        const p = personBy(slug);
+        const blocks = C.unavailBlocks(p, date, H);
+        const bars = ts.filter((s) => s.slug === slug).map((s) => {
+          const warn = blocks.some((b) => b.start < s.end && s.start < b.end);
+          const dragging = st.barDrag !== null && st.barDrag.preview === s;
+          const label = C.fmt(s.start) + '–' + C.fmt(s.end);
+          return {
+            left: xOf(s.start), width: Math.max((s.end - s.start) * pxm, 8),
+            bg: p.color ?? team.color, label: label, warn: warn,
+            title: p.name + ' · ' + team.name + ' ' + label + (warn ? ' · overlaps unavailable time' : '') + '. Drag to move, drag edges to resize, click to annotate.',
+            ring: warn ? '0 0 0 2px #0e1014, 0 0 0 4px #f2b33d' : (dragging ? '0 6px 18px rgba(0,0,0,.5)' : 'none'),
+            z: dragging ? 2 : 1,
+            downMove: (e) => this.barDown(e, s, 'move', pxm),
+            downStart: (e) => this.barDown(e, s, 'start', pxm),
+            downEnd: (e) => this.barDown(e, s, 'end', pxm),
+            removeLabel: 'Remove ' + p.name + ' ' + label,
+            remove: () => this.commit((mm) => C.removeShift(mm, C.shiftKey(s)))
+          };
+        });
+        return {
+          name: p.name, role: p.role ?? '', dot: p.color ?? team.color, bars: bars,
+          blocks: blocks.map((b) => ({ left: xOf(b.start), width: (b.end - b.start) * pxm })),
+          labelBg: st.selected === slug ? '#1d2330' : '#12151b',
+          fade: fadeOf(slug), matchRing: hitOf(slug) ? 'inset 3px 0 0 #f2b33d' : 'none',
+          select: () => this.select(slug)
+        };
+      });
+      const total = ts.reduce((a, s) => a + s.end - s.start, 0);
+      return {
+        name: team.name, color: team.color, collapsed: collapsed, expanded: !collapsed,
+        expandedStr: String(!collapsed), chevron: collapsed ? -90 : 0,
+        toggleLabel: (collapsed ? 'Expand ' : 'Collapse ') + team.name,
+        toggle: () => this.toggleTeam(team.name),
+        stat: rows.length + (rows.length === 1 ? ' person · ' : ' people · ') + C.fmtDur(total),
+        rows: rows, empty: rows.length === 0,
+        mini: ts.map((s, i) => ({ left: xOf(s.start), width: Math.max((s.end - s.start) * pxm, 4), top: 7 + (i % 4) * 8, bg: personBy(s.slug).color ?? team.color, fade: fadeOf(s.slug) })),
+        dropBg: st.dragOverTeam === team.name ? 'rgba(242,179,61,.08)' : 'transparent',
+        dragOver: (e) => this.dragOverTeam(e, team.name),
+        dragLeave: (e) => this.dragLeave(e),
+        drop: (e) => this.dropOnLane(e, team.name, pxm, shiftHours)
+      };
+    });
+
+    // ---- Roster drawer
+    const onDay = {};
+    dayShifts.forEach((s) => { (onDay[s.slug] = onDay[s.slug] || []).push(s); });
+    const rosterItem = (p) => {
+      const blocks = hasDate ? C.unavailBlocks(p, date, H) : [];
+      const offAll = blocks.some((b) => b.start <= H.start && b.end >= H.end);
+      const mine = onDay[p.slug] || [];
+      let sub, subColor = '#9aa3b2';
+      if (mine.length > 0) {
+        sub = mine[0].team + ' ' + C.fmt(mine[0].start) + '–' + C.fmt(mine[0].end) + (mine.length > 1 ? ' +' + (mine.length - 1) : '');
+      } else if (offAll) {
+        sub = 'Unavailable all day'; subColor = '#e88a92';
+      } else {
+        sub = (p.role ?? 'No role') + (blocks.length > 0 ? ' · partly unavailable' : '');
+      }
+      return {
+        slug: p.slug, name: p.name, sub: sub, subColor: subColor, dot: p.color ?? '#8a93a3',
+        border: st.selected === p.slug ? '#e7eaf0' : (hitOf(p.slug) ? '#f2b33d' : '#2a303b'),
+        fade: fadeOf(p.slug),
+        aria: p.name + ', ' + sub + '. Drag onto a team to schedule.',
+        select: () => this.select(p.slug),
+        dragStart: (e) => this.dragStart(e, p.slug)
+      };
+    };
+    const unscheduled = m.people.filter((p) => onDay[p.slug] === undefined).map(rosterItem);
+    const scheduled = m.people.filter((p) => onDay[p.slug] !== undefined).map(rosterItem);
+
+    // ---- Layout
+    const cards = m.teams.map((team) => {
+      const dragging = td !== null && td.name === team.name;
+      const x = dragging ? td.x : team.x;
+      const y = dragging ? td.y : team.y;
+      const members = dayShifts
+        .filter((s) => s.team === team.name && s.start <= t && t < s.end)
+        .sort((a, b) => a.start - b.start || a.slug.localeCompare(b.slug))
+        .map((s) => s.slug);
+      const collapsed = st.collapsed[team.name] === true;
+      return {
+        name: team.name, color: team.color, tint: team.color + '24',
+        left: DOCK_W + x, top: y, members: members, collapsed: collapsed,
+        height: HEAD_H + (collapsed ? 0 : Math.max(members.length, 1) * ROW_H + PAD * 2),
+        count: members.length, showEmpty: !collapsed && members.length === 0,
+        transition: dragging ? 'none' : 'height 560ms cubic-bezier(.2,.8,.2,1), left 300ms ease, top 300ms ease',
+        border: st.dragOverTeam === team.name ? '#f2b33d' : '#2a303b',
+        cursor: dragging ? 'grabbing' : 'grab', z: dragging ? 15 : 10,
+        expandedStr: String(!collapsed), chevron: collapsed ? -90 : 0,
+        toggleLabel: (collapsed ? 'Expand ' : 'Collapse ') + team.name,
+        toggle: () => this.toggleTeam(team.name),
+        down: (e) => this.teamDown(e, team),
+        dragOver: (e) => this.dragOverTeam(e, team.name),
+        dragLeave: (e) => this.dragLeave(e),
+        drop: (e) => this.dropOnCard(e, team.name, t, shiftHours * 60)
+      };
+    });
+    const cardBy = {};
+    cards.forEach((c) => { cardBy[c.name] = c; });
+    const dockSlugs = m.people.filter((p) => activeOf(p.slug) === undefined).map((p) => p.slug);
+    const ease = 'cubic-bezier(.2,.8,.2,1)';
+    const chips = m.people.map((p) => {
+      const a = activeOf(p.slug);
+      const status = hasDate ? C.statusAt(p, date, t, H) : 'open';
+      let x, y, w, op = 1, sc = 1, sub, subColor = '#9aa3b2', frozen = false, border = '#2a303b';
+      if (a !== undefined) {
+        const c = cardBy[a.team];
+        if (c === undefined) throw new Error('bug: this should never happen (shift references missing team ' + a.team + ')');
+        frozen = td !== null && td.name === a.team;
+        x = c.left + PAD; w = CARD_W - PAD * 2;
+        if (c.collapsed) { y = c.top + 7; op = 0; sc = 0.85; } else { y = c.top + HEAD_H + PAD + c.members.indexOf(p.slug) * ROW_H; }
+        sub = (p.role !== null ? p.role + ' · ' : '') + 'until ' + C.fmt(a.end);
+        if (status === 'unavailable') { sub = 'Unavailable · until ' + C.fmt(a.end); subColor = '#f2b33d'; border = '#f2b33d'; }
+      } else {
+        x = 12; y = DOCK_HEAD + dockSlugs.indexOf(p.slug) * ROW_H; w = DOCK_W - 24;
+        const next = dayShifts.find((s) => s.slug === p.slug && s.start > t);
+        if (status === 'unavailable') { sub = 'Unavailable'; subColor = '#e88a92'; }
+        else sub = next !== undefined ? 'Next: ' + next.team + ' ' + C.fmt(next.start) : (p.role ?? 'No more shifts');
+      }
+      if (hitOf(p.slug)) border = '#f2b33d';
+      if (st.selected === p.slug) border = '#e7eaf0';
+      const shown = op * fadeOf(p.slug);
+      const tr = frozen ? 'none' : 'transform 650ms ' + ease + ', opacity 380ms ease, width 650ms ' + ease;
+      return {
+        name: p.name, sub: sub, subColor: subColor, dot: p.color ?? (a !== undefined ? teamColor[a.team] : '#8a93a3'),
+        border: border, tabIndex: op === 0 ? -1 : 0,
+        style: 'width: ' + w + 'px; transform: translate(' + x + 'px, ' + y + 'px) scale(' + sc + '); opacity: ' + shown + '; transition: ' + tr + '; pointer-events: ' + (op === 0 ? 'none' : 'auto'),
+        aria: p.name + ', ' + sub,
+        select: () => this.select(p.slug),
+        dragStart: (e) => this.dragStart(e, p.slug)
+      };
+    });
+    const bg = m.background;
+    const bgScale = bg !== null ? bg.scale : 1;
+    const mapW = Math.max(1000, 1000 * bgScale, ...cards.map((c) => c.left - DOCK_W + CARD_W + 40));
+    const stageH = Math.max(720, 720 * bgScale, ...cards.map((c) => c.top + c.height + 40), DOCK_HEAD + dockSlugs.length * ROW_H + 24);
+
+    const bgSample = bg !== null && bg.src === 'sample:floorplan';
+    const bgLocal = bg !== null && bg.src === 'local';
+    const bgImg = bg === null || bgSample ? null : (bgLocal ? st.localBg : bg.src);
+
+    // ---- Time slider marks
+    const markTimes = [];
+    dayShifts.forEach((s) => { [s.start, s.end].forEach((v) => { if (v > H.start && v < H.end && markTimes.indexOf(v) === -1) markTimes.push(v); }); });
+    const marks = markTimes.sort((a, b) => a - b).map((v) => ({
+      left: (v - H.start) / (H.end - H.start) * 100,
+      label: 'Jump to ' + C.fmt(v),
+      jump: () => this.setState({ t: v })
+    }));
+
+    // ---- Inspector
+    const sel = st.selected === null ? null : personBy(st.selected);
+    const timeOptions = [];
+    for (let v = 0; v <= 1440; v += 15) timeOptions.push({ value: String(v), label: C.fmt(v) });
+    const insp = sel === null ? null : {
+      name: sel.name, slug: sel.slug, role: sel.role ?? '',
+      dot: sel.color ?? '#8a93a3', colorVal: sel.color ?? '#8a93a3',
+      noColorPressed: String(sel.color === null),
+      swatches: C.palette().map((c) => ({
+        c: c, label: 'Color ' + c, pressed: String(sel.color === c),
+        ring: sel.color === c ? '0 0 0 2px #12151b, 0 0 0 4px #e7eaf0' : 'none',
+        pick: () => this.commit((mm) => C.updatePerson(mm, sel.slug, { color: c }))
+      })),
+      clearColor: () => this.commit((mm) => C.updatePerson(mm, sel.slug, { color: null })),
+      onColor: (e) => this.commit((mm) => C.updatePerson(mm, sel.slug, { color: e.target.value.toLowerCase() })),
+      onName: (e) => this.commit((mm) => C.updatePerson(mm, sel.slug, { name: e.target.value })),
+      onRole: (e) => this.commit((mm) => C.updatePerson(mm, sel.slug, { role: e.target.value === '' ? null : e.target.value })),
+      shifts: dayShifts.filter((s) => s.slug === sel.slug).map((s) => ({
+        team: s.team, range: C.fmt(s.start) + '–' + C.fmt(s.end), color: teamColor[s.team],
+        removeLabel: 'Remove ' + s.team + ' shift',
+        remove: () => this.commit((mm) => C.removeShift(mm, C.shiftKey(s)))
+      })),
+      noShifts: dayShifts.every((s) => s.slug !== sel.slug),
+      avail: sel.avail.map((a, i) => ({ a: a, i: i })).filter((x) => x.a.date === date).map((x) => ({
+        kindVal: x.a.kind, startVal: String(x.a.start), endVal: String(x.a.end),
+        onKind: (e) => this.commit((mm) => C.setAvail(mm, sel.slug, x.i, { kind: e.target.value })),
+        onStart: (e) => this.commit((mm) => C.setAvail(mm, sel.slug, x.i, { start: Number(e.target.value) })),
+        onEnd: (e) => this.commit((mm) => C.setAvail(mm, sel.slug, x.i, { end: Number(e.target.value) })),
+        remove: () => this.commit((mm) => C.removeAvail(mm, sel.slug, x.i))
+      })),
+      addAvail: () => this.commit((mm) => C.addAvail(mm, sel.slug, { kind: 'available', date: this.requireDate(), start: H.start, end: H.end }))
+    };
+
+    const di = hasDate ? m.dates.indexOf(date) : -1;
+    const isSwim = st.view === 'swim';
+
+    return {
+      title: m.title,
+      dateLong: hasDate ? C.dateLabel(date, true) : 'No days yet',
+      dateShort: hasDate ? C.dateLabel(date, false) : '',
+      hasDate: hasDate, date: date ?? '',
+      dateOptions: m.dates.map((d) => ({ value: d, label: C.dateLabel(d, true) })),
+      noPrev: di <= 0, noNext: di === -1 || di >= m.dates.length - 1,
+      prevDay: () => this.setState({ date: m.dates[di - 1] }),
+      nextDay: () => this.setState({ date: m.dates[di + 1] }),
+      onDate: (e) => this.setState({ date: e.target.value }),
+      addDay: () => {
+        const d = m.dates.length > 0 ? C.nextDate(m.dates[m.dates.length - 1]) : this.todayISO();
+        if (this.commit((mm) => C.addDate(mm, d)) !== null) this.setState({ date: d });
+      },
+      copyOpen: st.copyOpen && hasDate, copyOpenStr: String(st.copyOpen && hasDate),
+      noCopySource: !hasDate || m.dates.length < 2,
+      toggleCopy: () => this.setState({ copyOpen: !st.copyOpen }),
+      copyReplacePressed: String(st.copyMode === 'replace'), copyMergePressed: String(st.copyMode === 'merge'),
+      copyModeReplace: () => this.setState({ copyMode: 'replace' }),
+      copyModeMerge: () => this.setState({ copyMode: 'merge' }),
+      copyHelp: st.copyMode === 'replace'
+        ? 'Removes the shifts already on this day, then copies the chosen day. Availability is not copied.'
+        : "Keeps this day's shifts and adds the chosen day's. A double-booking cancels the copy.",
+      copySources: m.dates.filter((d) => d !== date).map((d) => {
+        const n = m.shifts.filter((s) => s.date === d).length;
+        return {
+          label: C.dateLabel(d, true), count: n + (n === 1 ? ' shift' : ' shifts'), empty: n === 0,
+          pick: () => {
+            const target = this.requireDate();
+            if (this.commit((mm) => C.copyDay(mm, d, target, st.copyMode)) !== null) {
+              this.setState({ copyOpen: false });
+              this.toast('Copied ' + n + (n === 1 ? ' shift' : ' shifts') + ' from ' + C.dateLabel(d, false) + ' into ' + C.dateLabel(target, false), 'info');
+            }
+          }
+        };
+      }),
+      swimPressed: String(isSwim), layoutPressed: String(!isSwim),
+      viewSwim: () => this.setState({ view: 'swim' }),
+      viewLayout: () => this.setState({ view: 'layout' }),
+      playing: st.playing, notPlaying: !st.playing,
+      playLabel: st.playing ? 'Pause' : 'Play through the day',
+      togglePlay: () => this.togglePlay(),
+      marks: marks, hStart: H.start, hEnd: H.end, t: t, timeLabel: C.fmt(t),
+      onTime: (e) => this.setState({ t: Number(e.target.value) }),
+      query: st.query, hasQuery: hasQuery,
+      onQuery: (e) => this.setState({ query: e.target.value }),
+      clearQuery: () => this.setState({ query: '' }),
+      matchCount: matchCount + '/' + m.people.length,
+      matchColor: matchCount === 0 ? '#e88a92' : '#f2b33d',
+      queryBorder: hasQuery ? (matchCount === 0 ? '#e06c75' : '#f2b33d') : '#2a303b',
+      mdPressed: String(st.panel === 'md'),
+      personTabPressed: String(st.panel === 'person'),
+      toggleMd: () => this.setState({ panel: st.panel === 'md' ? 'none' : 'md' }),
+      tabMd: () => this.setState({ panel: 'md' }),
+      tabPerson: () => this.setState({ panel: 'person' }),
+      closePanel: () => this.setState({ panel: 'none' }),
+
+      showDrawer: isSwim, showNoDate: !hasDate,
+      showSwim: isSwim && hasDate, showLayout: !isSwim && hasDate,
+      peopleCount: m.people.length,
+      unscheduled: unscheduled, scheduled: scheduled, noUnscheduled: unscheduled.length === 0,
+      newPerson: st.newPerson, newTeam: st.newTeam,
+      onNewPerson: (e) => this.setState({ newPerson: e.target.value }),
+      onNewTeam: (e) => this.setState({ newTeam: e.target.value }),
+      addPerson: () => this.addPerson(),
+      addTeam: () => this.addTeam(),
+      newPersonKey: (e) => { if (e.key === 'Enter') { e.preventDefault(); this.addPerson(); } },
+      newTeamKey: (e) => { if (e.key === 'Enter') { e.preventDefault(); this.addTeam(); } },
+
+      swimW: LABEL_W + laneW + 24, laneW: laneW, hourPx: hourPx,
+      gridOffset: xOf(Math.ceil(H.start / 60) * 60),
+      ticks: ticks, groups: groups,
+      cursorX: xOf(t), cursorLeft: LABEL_W + xOf(t),
+      onAxisClick: (e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        this.setState({ t: C.clamp(C.snap(H.start + (e.clientX - r.left) / pxm), H.start, H.end) });
+      },
+      onBarMove: (e) => this.onBarMove(e),
+      onBarUp: () => this.onBarUp(),
+      onBarCancel: () => this.setState({ barDrag: null }),
+      stop: (e) => e.stopPropagation(),
+
+      stageW: DOCK_W + mapW, stageH: stageH, mapW: mapW,
+      cards: cards, chips: chips, dockCount: dockSlugs.length,
+      dockBg: st.dragOverDock ? '#1a1d24' : '#12151b',
+      dockDragOver: (e) => { e.preventDefault(); if (!st.dragOverDock) this.setState({ dragOverDock: true }); },
+      dockDragLeave: (e) => this.dragLeave(e),
+      dockDrop: (e) => this.dropOnDock(e, t),
+      onTeamMove: (e) => this.onTeamMove(e),
+      onTeamUp: () => this.onTeamUp(),
+      hasBg: bg !== null, bgOpacity: bg !== null ? bg.opacity : 0,
+      bgOpacityLabel: bg !== null ? Math.round(bg.opacity * 100) + '%' : '',
+      bgSample: bgSample, showBgImg: bgImg !== null, bgImg: bgImg ?? '',
+      bgLocalMissing: bgLocal && st.localBg === null,
+      bgSamplePressed: String(bgSample), bgNonePressed: String(bg === null),
+      setBgSample: () => this.commit((mm) => C.setBackground(mm, mm.background !== null
+        ? Object.assign({}, mm.background, { src: 'sample:floorplan' })
+        : { src: 'sample:floorplan', opacity: 0.55, scale: 1 })),
+      setBgNone: () => this.commit((mm) => C.setBackground(mm, null)),
+      onBgFile: (e) => this.onBgFile(e),
+      onBgOpacity: (e) => this.commit((mm) => {
+        if (mm.background === null) throw new Error('Choose a background first');
+        return C.setBackground(mm, Object.assign({}, mm.background, { opacity: Math.round(Number(e.target.value) * 100) / 100 }));
+      }),
+      bgScale: bgScale, bgScaleLabel: Math.round(bgScale * 100) + '%', bgScaled: bgScale !== 1,
+      onBgScale: (e) => this.commit((mm) => {
+        if (mm.background === null) throw new Error('Choose a background first');
+        return C.setBackground(mm, Object.assign({}, mm.background, { scale: Math.round(Number(e.target.value) * 100) / 100 }));
+      }),
+      resetBgScale: () => this.commit((mm) => {
+        if (mm.background === null) throw new Error('Choose a background first');
+        return C.setBackground(mm, Object.assign({}, mm.background, { scale: 1 }));
+      }),
+
+      panelOpen: st.panel !== 'none', panelMd: st.panel === 'md', panelPerson: st.panel === 'person',
+      md: st.md, onMd: (e) => this.setMd(e.target.value),
+      hasParseError: st.parseError !== null, parseError: st.parseError ?? '',
+      mdStatus: st.parseError !== null ? 'Error' : 'In sync',
+      mdStatusBg: st.parseError !== null ? '#e88a92' : '#3fb68b',
+      onMdFile: (e) => this.onMdFile(e),
+      copyMd: () => {
+        navigator.clipboard.writeText(st.md).then(() => this.toast('Markdown copied to clipboard', 'info'), (err) => this.toast('Copy failed: ' + err.message, 'error'));
+      },
+      hasInsp: insp !== null, noInsp: insp === null, insp: insp, timeOptions: timeOptions,
+
+      hasToast: st.toast !== null, toast: st.toast !== null ? st.toast.msg : '',
+      toastBg: st.toast !== null && st.toast.kind === 'info' ? '#16251f' : '#2a1a1d',
+      toastBorder: st.toast !== null && st.toast.kind === 'info' ? '#3fb68b' : '#e06c75',
+      toastColor: st.toast !== null && st.toast.kind === 'info' ? '#bfe9d6' : '#f6c2c6',
+      dismissToast: () => { clearTimeout(this.toastTimer); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
